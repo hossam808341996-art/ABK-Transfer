@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1020">
+<meta name="description" content="ABK Design: انقل ملفاتك بين جهازين بكود من 3 أرقام مع دردشة داخلية.">
+<title>ABK Design</title>
+<style>[hidden]{display:none!important}html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;600;700&display=swap">
+<style>
+/* Layout: a workspace shell. Home picks send/receive. Once paired, a two-column desk:
+   files and pairing on the main side, a permanent internal chat on the other. Phones swap them with tabs. */
+:root{
+  --bg:#0a1020; --surface:#111a32; --surface2:#17223f; --line:#233258;
+  --fg:#e9edf9; --muted:#97a4c4; --accent:#8d7dff; --accent-fg:#0a1020; --accent-soft:rgba(141,125,255,.14);
+  --accent2:#38d2c2; --ok:#3ddc97; --warn:#ffb454; --bad:#ff7080; --shadow:0 10px 30px rgba(0,0,0,.28);
+  --f-display:"Reem Kufi","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#f2f4fa; --surface:#ffffff; --surface2:#eef1fb; --line:#d8def1;
+    --fg:#111933; --muted:#586280; --accent:#5a45e6; --accent-fg:#ffffff; --accent-soft:rgba(90,69,230,.1);
+    --accent2:#0a8f83; --ok:#12915b; --warn:#a86400; --bad:#c9283c; --shadow:0 10px 30px rgba(30,40,90,.08); color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f2f4fa; --surface:#ffffff; --surface2:#eef1fb; --line:#d8def1;
+  --fg:#111933; --muted:#586280; --accent:#5a45e6; --accent-fg:#ffffff; --accent-soft:rgba(90,69,230,.1);
+  --accent2:#0a8f83; --ok:#12915b; --warn:#a86400; --bad:#c9283c; --shadow:0 10px 30px rgba(30,40,90,.08); color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1080px;margin-inline:auto;padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;background:none;border:0;padding:0;text-align:start}
+.logo{width:38px;height:38px;border-radius:11px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center}
+.logo svg{width:22px;height:22px;stroke-width:2.2}
+.brand b{font-family:var(--f-display);font-size:20px;font-weight:700;letter-spacing:.3px;display:block;line-height:1.1}
+.brand small{color:var(--muted);font-size:12px;display:block}
+.sp{flex:1}
+.tools{display:flex;gap:8px;align-items:center}
+.ib{height:36px;min-width:36px;padding-inline:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500}
+.ib:hover{background:var(--surface2)}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px}
+.pill code{font-family:var(--f-mono);font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--warn);flex:none}
+.dot.on{background:var(--ok)}
+.sess{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+
+/* typography */
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-size:clamp(28px,5.5vw,42px);line-height:1.2;margin:6px 0 8px;font-weight:700;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:21px;margin:0 0 4px;font-weight:600;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch}
+.view{padding-block:28px;display:flex;flex-direction:column;gap:24px}
+
+/* buttons */
+.btn{height:44px;padding-inline:20px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:var(--surface2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.sm{height:36px;padding-inline:14px;font-size:13px}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* home */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:center}
+.flow{border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.flow .dev{display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:14px;padding:12px 14px}
+.flow .dev svg{color:var(--accent)}
+.flow .dev small{display:block;color:var(--muted);font-size:12px}
+.flow .dev b{font-weight:600}
+.flow .link{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;padding-inline:14px}
+.flow .link i{flex:1;height:0;border-top:1.5px dashed var(--line)}
+.flow .link code{font-family:var(--f-mono);color:var(--accent);font-weight:600;font-size:15px;letter-spacing:.2em}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.mode{display:flex;flex-direction:column;align-items:flex-start;gap:14px;text-align:start;padding:22px;border-radius:18px;border:1px solid var(--line);background:var(--surface);min-width:0}
+.mode:hover{border-color:var(--c)}
+.mode .tile{width:48px;height:48px;border-radius:14px;background:var(--surface2);color:var(--c);display:grid;place-items:center}
+.mode .tile svg{width:26px;height:26px}
+.mode .go{color:var(--c);font-weight:600;display:inline-flex;gap:6px;align-items:center}
+.mode.s{--c:var(--accent)} .mode.r{--c:var(--accent2)}
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border-top:1px solid var(--line)}
+.feat{display:flex;gap:12px;padding:18px 0;padding-inline-end:16px;min-width:0}
+.feat svg{color:var(--accent);margin-top:2px}
+.feat b{display:block;font-weight:600}
+.feat span{color:var(--muted);font-size:14px}
+.note{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px}
+.note svg{width:18px;height:18px;margin-top:2px}
+
+/* panels + workspace */
+.panel{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.tabs{display:none;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;height:38px;border:0;border-radius:9px;background:none;font-weight:600;color:var(--muted);display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.tabs button.on{background:var(--accent-soft);color:var(--accent)}
+.tabs .n,.unread{background:var(--bad);color:#fff;border-radius:999px;font-size:11px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding-inline:5px}
+.code{display:flex;gap:10px;direction:ltr;justify-content:center}
+.code span{width:72px;height:88px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font-family:var(--f-mono);font-size:44px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.status{display:flex;gap:10px;align-items:center;justify-content:center;color:var(--muted)}
+.status.ok{color:var(--ok)}
+.status .dot{animation:pulse 1.6s ease-in-out infinite}
+.status.ok .dot{animation:none;background:var(--ok)}
+@keyframes pulse{50%{opacity:.3}}
+.drop{border:1.5px dashed var(--line);border-radius:16px;padding:28px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--muted)}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop svg{width:32px;height:32px;color:var(--accent)}
+.drop b{color:var(--fg)}
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stats{display:flex;gap:16px;color:var(--muted);font-size:13px;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.list{display:flex;flex-direction:column}
+.empty{color:var(--muted);padding:14px 0;text-align:center;font-size:14px}
+.file{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.file:first-child{border-top:0}
+.thumb{width:44px;height:44px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--muted);overflow:hidden;font-family:var(--f-mono);font-size:11px;text-transform:uppercase}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.fi{min-width:0}
+.fi b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi small{color:var(--muted);font-family:var(--f-mono);font-size:12px;font-variant-numeric:tabular-nums}
+.bar{height:5px;border-radius:5px;background:var(--surface2);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+.file.done .bar i{background:var(--ok)}
+.pct{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.file.done .pct{color:var(--ok)}
+.entry{display:flex;gap:10px;direction:ltr;justify-content:center;flex-wrap:wrap}
+.entry input{width:min(220px,100%);height:64px;text-align:center;font-family:var(--f-mono);font-size:34px;letter-spacing:.35em;padding-inline-start:.35em;border-radius:14px;border:1px solid var(--line);background:var(--surface2);font-variant-numeric:tabular-nums}
+.err{color:var(--bad);text-align:center;font-size:14px;min-height:22px}
+.back{align-self:flex-start;background:none;border:0;color:var(--muted);display:inline-flex;gap:6px;align-items:center;padding:4px 0}
+.back:hover{color:var(--fg)}
+.joinbox{max-width:560px;width:100%;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+
+/* internal chat */
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;height:min(620px,calc(100vh - 150px));min-height:420px;position:sticky;top:calc(84px + env(safe-area-inset-top,0px));overflow:hidden}
+.chat>header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}
+.av{width:38px;height:38px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.chat>header b{font-family:var(--f-display);font-weight:600;display:block;line-height:1.2}
+.chat>header small{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px}
+.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:82%;padding:8px 12px 6px;border-radius:14px;border-end-start-radius:4px;background:var(--surface2);overflow-wrap:anywhere}
+.m.me{align-self:flex-end;background:var(--accent);color:var(--accent-fg);border-end-start-radius:14px;border-end-end-radius:4px}
+.m time{display:block;font-family:var(--f-mono);font-size:10.5px;opacity:.65;margin-top:2px}
+.sys{align-self:center;color:var(--muted);font-size:12px;background:var(--surface2);border-radius:999px;padding:3px 12px;max-width:90%;text-align:center;overflow-wrap:anywhere}
+.cempty{margin:auto;text-align:center;color:var(--muted);font-size:14px;max-width:26ch;display:flex;flex-direction:column;gap:8px;align-items:center}
+.cempty svg{width:30px;height:30px;color:var(--accent)}
+.typing{padding:0 18px 6px;color:var(--muted);font-size:12px;min-height:22px}
+.chat form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.chat input{flex:1;min-width:0;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);padding-inline:14px}
+.chat input:disabled{opacity:.55}
+.sendb{width:42px;height:42px;border-radius:12px;border:0;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;flex:none}
+.sendb[disabled]{opacity:.5;cursor:not-allowed}
+
+/* modal */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(5,9,20,.6);display:grid;place-items:center;padding:16px}
+.dlg{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.dlg dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;color:var(--muted);font-size:14px}
+.dlg dd{margin:0;color:var(--fg);font-weight:500}
+.dlg .col{display:flex;flex-direction:column;gap:8px}
+footer{border-top:1px solid var(--line);padding-block:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:899px){
+  .work{grid-template-columns:minmax(0,1fr)}
+  .tabs{display:flex}
+  .work[data-tab="files"] .chat{display:none}
+  .work[data-tab="chat"] .main{display:none}
+  .chat{position:static;height:min(560px,70vh)}
+  .hero{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){.code span{width:60px;height:76px;font-size:36px}.top .tools{margin-inline-start:auto}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app" dir="rtl" lang="ar">
+  <div class="wrap">
+    <header class="top">
+      <button class="brand" id="homeBtn" type="button" aria-label="ABK Design">
+        <span class="logo"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4"/></svg></span>
+        <span><b>ABK Design</b><small data-i18n="tag"></small></span>
+      </button>
+      <span class="sp"></span>
+      <div class="tools">
+        <button class="ib" id="langBtn" type="button" aria-label="Language"></button>
+        <button class="ib" id="themeBtn" type="button" aria-label="Theme">
+          <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </div>
+      <div class="sess" id="sess" hidden>
+        <span class="pill"><span class="dot" id="sessDot"></span><span id="sessTxt"></span><code id="sessCode"></code></span>
+        <button class="btn sm" id="sessBack" type="button" data-i18n="backSess"></button>
+        <button class="btn sm danger" id="sessEnd" type="button" data-i18n="endConn"></button>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <section class="view" id="v-home">
+      <div class="hero">
+        <div>
+          <span class="eyebrow">ABK Design · 2026</span>
+          <h1 data-i18n="homeTitle"></h1>
+          <p class="lead" data-i18n="homeLead"></p>
+        </div>
+        <div class="flow" aria-hidden="true">
+          <div class="dev"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><div><small data-i18n="devA"></small><b data-i18n="devAn"></b></div></div>
+          <div class="link"><i></i><code>427</code><i></i></div>
+          <div class="dev"><svg class="i" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><div><small data-i18n="devB"></small><b data-i18n="devBn"></b></div></div>
+        </div>
+      </div>
+      <div class="modes">
+        <button class="mode s" id="goSend" type="button">
+          <span class="tile"><svg class="i" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+          <span><h2 data-i18n="sendT"></h2><p class="lead" data-i18n="sendD"></p></span>
+          <span class="go"><span data-i18n="sendGo"></span><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></span>
+        </button>
+        <button class="mode r" id="goRecv" type="button">
+          <span class="tile"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
+          <span><h2 data-i18n="recvT"></h2><p class="lead" data-i18n="recvD"></p></span>
+          <span class="go"><span data-i18n="recvGo"></span><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></span>
+        </button>
+      </div>
+      <div class="feats">
+        <div class="feat"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><b data-i18n="f1t"></b><span data-i18n="f1d"></span></div></div>
+        <div class="feat"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><div><b data-i18n="f2t"></b><span data-i18n="f2d"></span></div></div>
+        <div class="feat"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg><div><b data-i18n="f3t"></b><span data-i18n="f3d"></span></div></div>
+      </div>
+      <div class="note"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span data-i18n="demoNote"></span></div>
+    </section>
+
+    <!-- SEND -->
+    <section class="view" id="v-send" hidden>
+      <button class="back" type="button" data-back><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg><span data-i18n="back"></span></button>
+      <div><span class="eyebrow" data-i18n="step1"></span><h1 data-i18n="connT"></h1><p class="lead" data-i18n="connD"></p></div>
+      <div class="tabs" data-tabs>
+        <button type="button" data-tab="files" class="on"><span data-i18n="tFiles"></span></button>
+        <button type="button" data-tab="chat"><span data-i18n="chat"></span><span class="n unread" hidden>0</span></button>
+      </div>
+      <div class="work" data-work data-tab="files">
+        <div class="main">
+          <div class="panel">
+            <p class="lead" style="text-align:center" data-i18n="yourCode"></p>
+            <div class="code" id="codeBoxes"></div>
+            <div class="row">
+              <button class="btn pri" id="copyLink" type="button" data-i18n="copyLink"></button>
+              <button class="btn" id="copyCode" type="button" data-i18n="copyCode"></button>
+            </div>
+            <div class="status" id="sStatus"><span class="dot"></span><span id="sStatusTxt"></span></div>
+          </div>
+          <div class="panel">
+            <div class="head"><h2 data-i18n="sendFiles"></h2><div class="stats"><span id="sStat"></span><button class="btn sm" id="pauseBtn" type="button"></button></div></div>
+            <label class="drop" id="drop" for="picker">
+              <svg class="i" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5a4.2 4.2 0 0 1-.5 8.5H7zM12 17v-6M9 13l3-3 3 3"/></svg>
+              <b data-i18n="dropT"></b><span data-i18n="dropD"></span>
+              <span class="btn pri sm" data-i18n="pick"></span>
+            </label>
+            <input type="file" id="picker" multiple hidden>
+            <div class="list" id="sendList"></div>
+          </div>
+        </div>
+        <div id="slot-send"></div>
+      </div>
+    </section>
+
+    <!-- RECEIVE -->
+    <section class="view" id="v-recv" hidden>
+      <button class="back" type="button" data-back><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg><span data-i18n="back"></span></button>
+      <div class="joinbox" id="rJoin">
+        <div><span class="eyebrow" data-i18n="almost"></span><h1 data-i18n="enterT"></h1><p class="lead" data-i18n="enterD"></p></div>
+        <div class="panel">
+          <div class="entry">
+            <input id="codeIn" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="000" aria-label="Code">
+            <button class="btn pri" id="joinBtn" type="button" data-i18n="connect"></button>
+          </div>
+          <p class="err" id="joinErr" role="alert"></p>
+          <p class="lead" style="text-align:center;font-size:13px" data-i18n="linkHint"></p>
+        </div>
+      </div>
+      <div id="rReady" hidden>
+        <div><span class="eyebrow" data-i18n="welcome"></span><h1 data-i18n="readyT"></h1><p class="lead" data-i18n="readyD"></p></div>
+        <div class="tabs" data-tabs style="margin-top:20px">
+          <button type="button" data-tab="files" class="on"><span data-i18n="tFiles"></span></button>
+          <button type="button" data-tab="chat"><span data-i18n="chat"></span><span class="n unread" hidden>0</span></button>
+        </div>
+        <div class="work" data-work data-tab="files" style="margin-top:20px">
+          <div class="main">
+            <div class="panel">
+              <div class="status ok"><span class="dot"></span><span data-i18n="rLive"></span></div>
+              <div class="head"><h2 data-i18n="incoming"></h2><div class="stats"><span id="rStat"></span></div></div>
+              <div class="list" id="recvList"></div>
+            </div>
+          </div>
+          <div id="slot-recv"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer><span>ABK Design · 2026</span><span data-i18n="foot"></span></footer>
+  </div>
+
+  <aside class="chat" id="chat">
+    <header>
+      <span class="av"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+      <div><b data-i18n="chatT"></b><small><span class="dot" id="peerDot"></span><span id="peerState"></span></small></div>
+    </header>
+    <div class="msgs" id="msgs"></div>
+    <div class="typing" id="typing" aria-live="polite"></div>
+    <form id="chatForm">
+      <input id="chatIn" autocomplete="off" data-i18n-ph="msgPh" aria-label="Message">
+      <button class="sendb" id="chatSend" type="submit" aria-label="Send"><svg class="i" viewBox="0 0 24 24" id="sendIco"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </form>
+  </aside>
+
+  <div class="scrim" id="modal" hidden>
+    <div class="dlg" role="dialog" aria-modal="true">
+      <h2 data-i18n="activeT"></h2>
+      <p class="lead" data-i18n="activeD"></p>
+      <dl><dt data-i18n="curMode"></dt><dd id="mCur"></dd><dt data-i18n="sessCode"></dt><dd id="mCode" style="font-family:var(--f-mono)"></dd><dt data-i18n="wantMode"></dt><dd id="mWant"></dd></dl>
+      <div class="col">
+        <button class="btn pri" id="mBack" type="button" data-i18n="backSess"></button>
+        <button class="btn" id="mSwitch" type="button" data-i18n="endSwitch"></button>
+        <button class="btn" id="mCancel" type="button" data-i18n="cancel"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+var L={
+ar:{tag:"اتصل. شارك. كمّل.",homeTitle:"انقل ملفاتك بين جهازين",homeLead:"اختر الإرسال أو الاستقبال للبدء. من غير حساب، وبكود من 3 أرقام، مع دردشة داخلية بين الجهازين.",
+devA:"جهاز الإرسال",devAn:"الكمبيوتر",devB:"جهاز الاستقبال",devBn:"الموبايل",
+sendT:"إرسال ملفات",sendD:"انقل ملفاتك إلى الجهاز الآخر",sendGo:"ابدأ الإرسال",recvT:"استقبال ملفات",recvD:"استقبل من جهاز آخر",recvGo:"ابدأ الاستقبال",
+f1t:"اتصال مباشر بين الجهازين",f1d:"الملفات لا تمر على حساب ولا على خادم تخزين.",f2t:"دردشة داخلية",f2d:"راسل الجهاز المتصل أثناء النقل من نفس الصفحة.",f3t:"استئناف الجلسة",f3d:"ارجع للصفحة وكمّل من حيث وقفت.",
+demoNote:"الجهازان لازم يكونا متصلين بالإنترنت. لو الشبكة بتمنع الاتصال المباشر، النقل بيمر عبر خادم الموقع تلقائياً.",
+back:"رجوع",step1:"الخطوة الأولى",connT:"اتصل بالجهاز الثاني",connD:"انسخ رابط الاستقبال أو شارك الكود مع الجهاز الآخر.",yourCode:"كود التوصيل الخاص بك",
+copyLink:"نسخ رابط الاستقبال",copyCode:"نسخ الكود",copied:"تم النسخ",wait:"مستني الجهاز الثاني يتصل... سيب الصفحة دي مفتوحة.",linked:"الجهاز الثاني متصل",left:"الجهاز الآخر قطع الاتصال",
+sendFiles:"إرسال الملفات",dropT:"اختر الملفات أو اسحبها إلى هنا",dropD:"صور، مستندات، فيديوهات",pick:"اختيار الملفات",pause:"إيقاف مؤقت",resume:"استئناف",noSend:"الملفات اللي تختارها هتظهر هنا.",
+almost:"قربنا نوصل",enterT:"أدخل كود الاتصال",enterD:"أدخل الكود المكوّن من 3 أرقام من جهاز الإرسال.",connect:"اتصال",linkHint:"لو وصلك رابط، افتحه مباشرة ومش هتحتاج تكتب الكود.",
+badCode:"الكود غير صحيح أو جهاز الإرسال غير متاح.",welcome:"أهلاً بيك",readyT:"جاهز للاستقبال",readyD:"انتظر الملفات أو استخدم الدردشة.",rLive:"اتصال مباشر",incoming:"الملفات الواردة",noRecv:"أول ملف يوصل هتلاقيه هنا.",
+tFiles:"الملفات",chat:"الدردشة",chatT:"دردشة الجهازين",msgPh:"اكتب رسالة",chatEmpty:"ابدأ المحادثة مع الجهاز الآخر. الرسائل مباشرة وما بتتحفظش.",chatLocked:"الدردشة تفتح بعد اتصال الجهازين.",
+online:"متصل الآن",offline:"غير متصل",typing:"الجهاز الآخر بيكتب...",sysLinked:"تم الاتصال بالجهاز الآخر",sysLeft:"انقطع الاتصال",sysSent:"تم إرسال: ",sysGot:"وصل ملف: ",
+files:"ملف",
+sessActive:"جلسة نشطة",backSess:"العودة للجلسة",endConn:"إنهاء الاتصال",activeT:"لديك جلسة اتصال نشطة",activeD:"يمكنك العودة لها بدون فقد الاتصال، أو إنهاءها للانتقال للوضع الآخر.",
+curMode:"الوضع الحالي",sessCode:"كود الجلسة",wantMode:"الوضع المطلوب",endSwitch:"إنهاء الاتصال والانتقال",cancel:"إلغاء",mSend:"وضع الإرسال",mRecv:"وضع الاستقبال",
+noBC:"",noServer:"تعذر الوصول للخادم. تأكد من الإنترنت وجرب تاني.",rate:"محاولات كتير. استنى دقيقة وجرب تاني.",busy:"الكود ده مستخدم مع جهاز تاني.",save:"حفظ",foot:"اتصال HTTPS عند النشر · بدون حساب"},
+en:{tag:"Connect. Share. Continue.",homeTitle:"Move files between two devices",homeLead:"Choose send or receive to begin. No account, a 3-digit code, and a built-in chat between the two devices.",
+devA:"Sending device",devAn:"Computer",devB:"Receiving device",devBn:"Phone",
+sendT:"Send files",sendD:"Move your files to the other device",sendGo:"Start sending",recvT:"Receive files",recvD:"Receive from another device",recvGo:"Start receiving",
+f1t:"Direct device link",f1d:"Files never pass through an account or a storage server.",f2t:"Built-in chat",f2d:"Message the connected device from the same page while files move.",f3t:"Resume session",f3d:"Come back to the page and pick up where you left off.",
+demoNote:"Both devices need internet access. If the network blocks a direct link, transfers pass through the site server automatically.",
+back:"Back",step1:"Step one",connT:"Connect the other device",connD:"Copy the receive link or share the code with the other device.",yourCode:"Your pairing code",
+copyLink:"Copy receive link",copyCode:"Copy code",copied:"Copied",wait:"Waiting for the other device. Keep this page open.",linked:"Other device connected",left:"The other device disconnected",
+sendFiles:"Send files",dropT:"Choose files or drop them here",dropD:"Photos, documents, videos",pick:"Choose files",pause:"Pause",resume:"Resume",noSend:"Files you choose will appear here.",
+almost:"Almost there",enterT:"Enter the pairing code",enterD:"Type the 3-digit code shown on the sending device.",connect:"Connect",linkHint:"If you received a link, open it and you won't need the code.",
+badCode:"Wrong code, or the sending device isn't available.",welcome:"Welcome",readyT:"Ready to receive",readyD:"Wait for files or use the chat.",rLive:"Live connection",incoming:"Incoming files",noRecv:"The first file to arrive will show up here.",
+tFiles:"Files",chat:"Chat",chatT:"Device chat",msgPh:"Write a message",chatEmpty:"Start a conversation with the other device. Messages are live and not stored.",chatLocked:"Chat opens once both devices are connected.",
+online:"Online",offline:"Offline",typing:"The other device is typing...",sysLinked:"Connected to the other device",sysLeft:"Connection lost",sysSent:"Sent: ",sysGot:"Received: ",
+files:"files",
+sessActive:"Active session",backSess:"Back to session",endConn:"End connection",activeT:"You have an active session",activeD:"Go back without losing the connection, or end it to switch modes.",
+curMode:"Current mode",sessCode:"Session code",wantMode:"Requested mode",endSwitch:"End and switch",cancel:"Cancel",mSend:"Send mode",mRecv:"Receive mode",
+noBC:"",noServer:"Can't reach the server. Check your connection and retry.",rate:"Too many attempts. Wait a minute and retry.",busy:"This code is already paired with another device.",save:"Save",foot:"HTTPS connection when deployed · no account"}
+};
+var $=function(s){return document.querySelector(s)},$$=function(s){return document.querySelectorAll(s)};
+var app=$("#app"),lang="ar",CH=32768,sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+try{lang=localStorage.getItem("abk-lang")||"ar"}catch(e){}
+var S={mode:null,code:null,connected:false,peer:null,id:Math.random().toString(36).slice(2),paused:false,queue:[],pumping:false,incoming:{},unread:0,tab:"files",view:"home",sent:0,sentBytes:0,got:0,gotBytes:0,hadMsgs:false};
+var ICE=[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}];
+var T={ws:null,pc:null,dc:null,mode:null,hdr:null,timer:null,chain:Promise.resolve()};
+function wsSend(o){if(T.ws&&T.ws.readyState===1)T.ws.send(JSON.stringify(o))}
+function closeT(){
+  clearTimeout(T.timer);
+  try{if(T.dc)T.dc.close()}catch(e){}try{if(T.pc)T.pc.close()}catch(e){}
+  var w=T.ws;T.ws=null;try{if(w)w.close()}catch(e){}
+  T.pc=null;T.dc=null;T.mode=null;T.hdr=null;T.chain=Promise.resolve();
+}
+function wsOpen(onopen){
+  closeT();
+  var w;try{w=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws")}catch(e){$("#joinErr").textContent=t("noServer");return}
+  w.binaryType="arraybuffer";T.ws=w;
+  w.onopen=onopen;
+  w.onerror=function(){if(!S.connected)$("#joinErr").textContent=t("noServer")};
+  w.onclose=function(){if(T.ws===w){T.ws=null;if(S.connected&&T.mode==="relay")peerGone()}};
+  w.onmessage=function(ev){
+    if(typeof ev.data!=="string"){onBinary(ev.data);return}
+    var m;try{m=JSON.parse(ev.data)}catch(e){return}
+    onSignal(m);
+  };
+}
+// Keep an open pairing session alive on hosts that idle out inactive sockets.
+// Runs only while a WebSocket is actually open; no background service is created.
+setInterval(function(){if(T.ws&&T.ws.readyState===1)wsSend({type:"heartbeat"})},60000);
+function hostConnect(){wsOpen(function(){wsSend({type:"host",code:S.code})})}
+function onSignal(m){
+  if(m.type==="error"){
+    if(m.reason==="taken"&&S.mode==="send"&&!S.connected){S.code=newCode();save();drawCode();render();hostConnect()}
+    else if(S.mode==="recv"){$("#joinErr").textContent=t(m.reason==="rate"?"rate":m.reason==="busy"?"busy":"badCode")}
+    return;
+  }
+  if(m.type==="peer-joined")return startPc(true);
+  if(m.type==="joined")return startPc(false);
+  if(m.type==="peer-left"){if(S.connected)peerGone();return}
+  if(m.type==="relay"){try{onData(m.data)}catch(e){}return}
+  if(m.type==="signal"){T.chain=T.chain.then(function(){return onRtcSignal(m.data)}).catch(function(){});}
+}
+function startPc(isHost){
+  if(typeof RTCPeerConnection==="undefined"){useRelay();return}
+  var pc=new RTCPeerConnection({iceServers:ICE});T.pc=pc;
+  pc.onicecandidate=function(e){if(e.candidate)wsSend({type:"signal",data:{c:e.candidate}})};
+  pc.onconnectionstatechange=function(){if(pc.connectionState==="failed")fallback()};
+  T.timer=setTimeout(fallback,8000);
+  if(isHost){
+    var dc=pc.createDataChannel("abk");setupDc(dc);
+    pc.createOffer().then(function(o){return pc.setLocalDescription(o).then(function(){wsSend({type:"signal",data:{d:pc.localDescription}})})}).catch(fallback);
+  }else{pc.ondatachannel=function(e){setupDc(e.channel)}}
+}
+function onRtcSignal(d){
+  if(d.relay){useRelay();return Promise.resolve()}
+  var pc=T.pc;if(!pc)return Promise.resolve();
+  if(d.d){
+    return pc.setRemoteDescription(d.d).then(function(){
+      if(d.d.type==="offer")return pc.createAnswer().then(function(a){return pc.setLocalDescription(a).then(function(){wsSend({type:"signal",data:{d:pc.localDescription}})})});
+    });
+  }
+  if(d.c)return pc.addIceCandidate(d.c);
+  return Promise.resolve();
+}
+function setupDc(dc){
+  T.dc=dc;dc.binaryType="arraybuffer";
+  dc.onopen=function(){if(T.mode)return;T.mode="p2p";onConnected()};
+  dc.onmessage=function(e){onData(e.data)};
+  dc.onclose=function(){if(T.mode==="p2p"&&S.connected)peerGone()};
+}
+function fallback(){if(S.connected||T.mode)return;wsSend({type:"signal",data:{relay:1}});useRelay()}
+function useRelay(){
+  if(T.mode)return;T.mode="relay";clearTimeout(T.timer);
+  try{if(T.pc)T.pc.close()}catch(e){}T.pc=null;T.dc=null;onConnected();
+}
+function onConnected(){clearTimeout(T.timer);S.connected=true;$("#joinErr").textContent="";save();sys(t("sysLinked"));render()}
+function sendRaw(x){
+  if(T.mode==="p2p"&&T.dc&&T.dc.readyState==="open")T.dc.send(x);
+  else if(T.mode==="relay"&&T.ws&&T.ws.readyState===1){typeof x==="string"?T.ws.send(JSON.stringify({type:"relay",data:x})):T.ws.send(x)}
+}
+async function sendChunk(fid,idx,buf){
+  var ch=function(){return T.mode==="p2p"?(T.dc?T.dc.bufferedAmount:0):(T.ws?T.ws.bufferedAmount:0)};
+  while(S.connected&&ch()>1048576)await sleep(20);
+  sendRaw(JSON.stringify({t:"chunk",fid:fid,idx:idx}));sendRaw(buf);
+}
+function onData(d){
+  if(typeof d==="string"){var m;try{m=JSON.parse(d)}catch(e){return}handle(m)}else onBinary(d);
+}
+function onBinary(buf){if(T.hdr){var h=T.hdr;T.hdr=null;gotChunk(h,buf)}}
+function t(k){return L[lang][k]||k}
+function fmt(n){if(n<1024)return n+" B";if(n<1048576)return (n/1024).toFixed(1)+" KB";if(n<1073741824)return (n/1048576).toFixed(1)+" MB";return (n/1073741824).toFixed(2)+" GB"}
+function hhmm(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
+function save(){try{if(S.mode)sessionStorage.setItem("abk-sess",JSON.stringify({mode:S.mode,code:S.code}));else sessionStorage.removeItem("abk-sess")}catch(e){}}
+function post(m){if(!S.connected)return;sendRaw(JSON.stringify(m))}
+
+/* language + theme */
+function applyLang(){
+  app.dir=lang==="ar"?"rtl":"ltr";app.lang=lang;
+  $$("[data-i18n]").forEach(function(e){e.textContent=t(e.dataset.i18n)});
+  $$("[data-i18n-ph]").forEach(function(e){e.placeholder=t(e.dataset.i18nPh)});
+  $("#langBtn").textContent=lang==="ar"?"EN":"ع";
+  var fl=lang==="ar"?"":"scaleX(-1)";
+  $$(".mode .go svg,[data-back] svg,#sendIco").forEach(function(s){s.style.transform=fl});
+  render();
+}
+$("#langBtn").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("abk-lang",lang)}catch(e){}applyLang()};
+$("#themeBtn").onclick=function(){
+  var r=document.documentElement,cur=r.dataset.theme;
+  if(!cur)cur=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";
+  r.dataset.theme=cur==="dark"?"light":"dark";
+  try{localStorage.setItem("abk-theme",r.dataset.theme)}catch(e){}
+};
+try{var th=localStorage.getItem("abk-theme");if(th)document.documentElement.dataset.theme=th}catch(e){}
+
+/* views */
+function placeChat(){
+  var slot=$(S.view==="recv"?"#slot-recv":"#slot-send");
+  if(slot&&$("#chat").parentNode!==slot)slot.appendChild($("#chat"));
+  $("#chat").hidden=!(S.view==="send"||(S.view==="recv"&&S.connected));
+}
+function setView(v){
+  S.view=v;["home","send","recv"].forEach(function(n){$("#v-"+n).hidden=n!==v});
+  if(v==="home")document.body.appendChild($("#chat")),$("#chat").hidden=true;
+  window.scrollTo(0,0);render();
+}
+function setTab(tb){
+  S.tab=tb;if(tb==="chat"){S.unread=0}
+  $$("[data-work]").forEach(function(w){w.dataset.tab=tb});
+  $$("[data-tabs] button").forEach(function(b){b.classList.toggle("on",b.dataset.tab===tb)});
+  updUnread();
+  if(tb==="chat"){var m=$("#msgs");m.scrollTop=m.scrollHeight}
+}
+$$("[data-tabs] button").forEach(function(b){b.onclick=function(){setTab(b.dataset.tab)}});
+function chatVisible(){return S.view!=="home"&&!($("#chat").hidden)&&(matchMedia("(min-width:900px)").matches||S.tab==="chat")}
+function render(){
+  var has=!!S.mode;
+  $("#sess").hidden=!has;
+  if(has){
+    $("#sessTxt").textContent=t("sessActive")+" · "+t(S.mode==="send"?"mSend":"mRecv")+" · ";
+    $("#sessCode").textContent=S.code;$("#sessDot").className="dot"+(S.connected?" on":"");
+  }
+  var st=$("#sStatus");st.className="status"+(S.connected?" ok":"");
+  $("#sStatusTxt").textContent=S.connected?t("linked"):t("wait");
+  $("#pauseBtn").textContent=S.paused?t("resume"):t("pause");
+  $("#sStat").textContent=S.sent?S.sent+" "+t("files")+" · "+fmt(S.sentBytes):"";
+  $("#rStat").textContent=S.got?S.got+" "+t("files")+" · "+fmt(S.gotBytes):"";
+  $("#peerDot").className="dot"+(S.connected?" on":"");
+  $("#peerState").textContent=S.connected?t("online"):t("offline");
+  $("#chatIn").disabled=!S.connected;$("#chatSend").disabled=!S.connected;
+  var rc=S.mode==="recv"&&S.connected;
+  $("#rJoin").hidden=rc;$("#rReady").hidden=!rc;
+  if(!$("#sendList").children.length)$("#sendList").innerHTML='<p class="empty">'+t("noSend")+'</p>';
+  if(!$("#recvList").children.length)$("#recvList").innerHTML='<p class="empty">'+t("noRecv")+'</p>';
+  var ms=$("#msgs");
+  if(!S.hadMsgs){ms.innerHTML='<div class="cempty"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>'+(S.connected?t("chatEmpty"):t("chatLocked"))+'</span></div>'}
+  placeChat();updUnread();
+}
+$("#homeBtn").onclick=function(){setView("home")};
+$$("[data-back]").forEach(function(b){b.onclick=function(){setView("home")}});
+
+/* session control */
+function newCode(){return String(100+Math.floor(Math.random()*900))}
+function drawCode(){var b=$("#codeBoxes");b.innerHTML="";S.code.split("").forEach(function(c){var s=document.createElement("span");s.textContent=c;b.appendChild(s)})}
+function startSend(code){S.mode="send";S.code=code||newCode();S.connected=false;S.peer=null;save();drawCode();setTab("files");setView("send");hostConnect()}
+function startRecv(){S.mode="recv";S.connected=false;save();setTab("files");setView("recv");setTimeout(function(){$("#codeIn").focus()},50)}
+function endSession(notify){
+  if(notify&&S.code)post({t:"bye"});closeT();
+  S.mode=null;S.code=null;S.connected=false;S.peer=null;S.paused=false;S.queue=[];S.incoming={};
+  S.sent=0;S.sentBytes=0;S.got=0;S.gotBytes=0;S.hadMsgs=false;S.unread=0;
+  $("#sendList").innerHTML="";$("#recvList").innerHTML="";$("#msgs").innerHTML="";$("#typing").textContent="";
+  save();render();
+}
+function want(mode){
+  if(S.mode&&S.mode!==mode){
+    $("#mCur").textContent=t(S.mode==="send"?"mSend":"mRecv");$("#mCode").textContent=S.code;$("#mWant").textContent=t(mode==="send"?"mSend":"mRecv");
+    $("#modal").hidden=false;$("#mSwitch").onclick=function(){$("#modal").hidden=true;endSession(true);mode==="send"?startSend():startRecv()};
+    return;
+  }
+  if(S.mode===mode){setView(mode==="send"?"send":"recv");return}
+  mode==="send"?startSend():startRecv();
+}
+$("#goSend").onclick=function(){want("send")};
+$("#goRecv").onclick=function(){want("recv")};
+$("#mCancel").onclick=function(){$("#modal").hidden=true};
+$("#mBack").onclick=function(){$("#modal").hidden=true;setView(S.mode==="send"?"send":"recv")};
+$("#sessBack").onclick=function(){setView(S.mode==="send"?"send":"recv")};
+$("#sessEnd").onclick=function(){endSession(true);setView("home")};
+
+/* copy */
+function copy(text,btn){
+  var orig=btn.textContent;
+  function ok(){btn.textContent=t("copied");setTimeout(function(){btn.textContent=orig},1400)}
+  function fallback(){var i=document.createElement("input");i.value=text;document.body.appendChild(i);i.select();try{document.execCommand("copy")}catch(e){}i.remove();ok()}
+  try{navigator.clipboard.writeText(text).then(ok,fallback)}catch(e){fallback()}
+}
+$("#copyLink").onclick=function(){copy(location.href.split("#")[0]+"#r"+S.code,this)};
+$("#copyCode").onclick=function(){copy(S.code,this)};
+
+/* receive: join */
+var joinTimer=null;
+function join(code){
+  $("#joinErr").textContent="";S.code=code;S.mode="recv";save();
+  wsOpen(function(){wsSend({type:"join",code:code})});
+}
+$("#joinBtn").onclick=function(){var v=$("#codeIn").value.replace(/\D/g,"");if(v.length===3)join(v);else $("#joinErr").textContent=t("badCode")};
+$("#codeIn").addEventListener("input",function(){this.value=this.value.replace(/\D/g,"");$("#joinErr").textContent=""});
+$("#codeIn").addEventListener("keydown",function(e){if(e.key==="Enter")$("#joinBtn").click()});
+
+/* file rows */
+function ext(n){var m=/\.([a-z0-9]{1,4})$/i.exec(n);return m?m[1]:"file"}
+function row(name,size){
+  var r=document.createElement("div");r.className="file";
+  r.innerHTML='<div class="thumb"></div><div class="fi"><b></b><small></small><div class="bar"><i></i></div></div><span class="pct">0%</span>';
+  r.querySelector("b").textContent=name;r.querySelector("small").textContent=fmt(size);r.querySelector(".thumb").textContent=ext(name);
+  return {root:r,bar:r.querySelector(".bar i"),pct:r.querySelector(".pct"),thumb:r.querySelector(".thumb")};
+}
+function setP(r,p){r.bar.style.width=p+"%";r.pct.textContent=Math.round(p)+"%";if(p>=100)r.root.classList.add("done")}
+function addRow(sel,r){var l=$(sel),e=l.querySelector(".empty");if(e)e.remove();l.appendChild(r.root)}
+
+/* send */
+function addFiles(files){
+  Array.prototype.forEach.call(files,function(f){
+    var r=row(f.name,f.size);addRow("#sendList",r);
+    S.queue.push({file:f,row:r,fid:S.id+"-"+Date.now()+"-"+Math.random().toString(36).slice(2,6)});
+  });
+  pump();
+}
+async function pump(){
+  if(S.pumping)return;S.pumping=true;
+  while(S.queue.length){
+    var q=S.queue[0];
+    while(!S.connected||S.paused){await sleep(150);if(!S.mode){S.pumping=false;return}}
+    var f=q.file,total=Math.max(1,Math.ceil(f.size/CH));
+    post({t:"meta",fid:q.fid,name:f.name,size:f.size,type:f.type,total:total});
+    for(var i=0;i<total;i++){
+      while(!S.connected||S.paused){await sleep(150);if(!S.mode){S.pumping=false;return}}
+      var buf=await f.slice(i*CH,(i+1)*CH).arrayBuffer();
+      await sendChunk(q.fid,i,buf);
+      setP(q.row,((i+1)/total)*100);
+      if(i%4===3)await sleep(4);
+    }
+    post({t:"done",fid:q.fid});setP(q.row,100);S.queue.shift();
+    S.sent++;S.sentBytes+=f.size;sys(t("sysSent")+f.name);render();
+  }
+  S.pumping=false;
+}
+$("#picker").onchange=function(){addFiles(this.files);this.value=""};
+$("#pauseBtn").onclick=function(){S.paused=!S.paused;render()};
+var dz=$("#drop");
+["dragenter","dragover"].forEach(function(n){dz.addEventListener(n,function(e){e.preventDefault();dz.classList.add("over")})});
+["dragleave","drop"].forEach(function(n){dz.addEventListener(n,function(e){e.preventDefault();dz.classList.remove("over")})});
+dz.addEventListener("drop",function(e){if(e.dataTransfer&&e.dataTransfer.files.length)addFiles(e.dataTransfer.files)});
+
+/* chat */
+function updUnread(){
+  var show=S.unread>0&&!chatVisible();
+  $$(".unread").forEach(function(u){u.hidden=!show;u.textContent=S.unread});
+}
+function clearEmpty(){if(!S.hadMsgs){$("#msgs").innerHTML="";S.hadMsgs=true}}
+function pushMsg(el){clearEmpty();var m=$("#msgs");m.appendChild(el);m.scrollTop=m.scrollHeight}
+function addMsg(text,me){
+  var d=document.createElement("div");d.className="m"+(me?" me":"");
+  var p=document.createElement("span");p.textContent=text;var tm=document.createElement("time");tm.textContent=hhmm();
+  d.appendChild(p);d.appendChild(tm);pushMsg(d);
+}
+function sys(text){var d=document.createElement("div");d.className="sys";d.textContent=text;pushMsg(d)}
+var lastTyping=0,typingTimer=null;
+$("#chatIn").addEventListener("input",function(){var n=Date.now();if(S.connected&&n-lastTyping>1200){lastTyping=n;post({t:"typing"})}});
+$("#chatForm").onsubmit=function(e){
+  e.preventDefault();var v=$("#chatIn").value.trim();if(!v||!S.connected)return;
+  post({t:"chat",text:v});addMsg(v,true);$("#chatIn").value="";
+};
+
+/* incoming messages */
+function peerGone(){
+  S.connected=false;S.peer=null;sys(t("sysLeft"));
+  var w=T.ws;closeT();
+  if(S.mode==="send"){render();$("#sStatusTxt").textContent=t("left");setTimeout(function(){if(S.mode==="send"&&!S.connected)hostConnect()},400)}
+  else{S.mode="recv";render();setView("recv");$("#joinErr").textContent=t("left")}
+}
+function gotChunk(h,buf){
+  var inc=S.incoming[h.fid];if(!inc)return;
+  inc.parts[h.idx]=buf;inc.got++;setP(inc.row,(inc.got/inc.total)*99.9);
+}
+function handle(m){
+  if(!S.connected)return;
+  if(m.t==="bye"){peerGone();return}
+  if(m.t==="typing"){
+    $("#typing").textContent=t("typing");clearTimeout(typingTimer);
+    typingTimer=setTimeout(function(){$("#typing").textContent=""},2500);return;
+  }
+  if(m.t==="chat"){
+    $("#typing").textContent="";addMsg(m.text,false);
+    if(!chatVisible()){S.unread++;updUnread()}
+    return;
+  }
+  if(m.t==="chunk"){T.hdr=m;return}
+  if(S.mode!=="recv")return;
+  if(m.t==="meta"){
+    var r=row(m.name,m.size);addRow("#recvList",r);
+    S.incoming[m.fid]={row:r,parts:[],got:0,size:m.size,type:m.type,total:m.total,name:m.name};return;
+  }
+  var inc=S.incoming[m.fid];if(!inc)return;
+  if(m.t==="done"){
+    var blob=new Blob(inc.parts,{type:inc.type||"application/octet-stream"});
+    setP(inc.row,100);
+    var url=URL.createObjectURL(blob);
+    if(/^image\//.test(inc.type)){
+      var img=document.createElement("img");img.alt="";img.src=url;
+      inc.row.thumb.textContent="";inc.row.thumb.appendChild(img);
+    }
+    var a=document.createElement("a");a.href=url;a.download=inc.name;a.className="btn sm";a.textContent=t("save");
+    inc.row.root.appendChild(a);inc.row.root.style.gridTemplateColumns="44px 1fr auto auto";
+    inc.parts=[];S.got++;S.gotBytes+=inc.size;sys(t("sysGot")+inc.name);render();
+  }
+}
+matchMedia("(min-width:900px)").addEventListener&&matchMedia("(min-width:900px)").addEventListener("change",updUnread);
+
+/* boot */
+applyLang();
+var h=/^#r(\d{3})$/.exec(location.hash||""),saved=null;
+try{saved=JSON.parse(sessionStorage.getItem("abk-sess")||"null")}catch(e){}
+if(h){startRecv();$("#codeIn").value=h[1];join(h[1])}
+else if(saved&&saved.code){
+  S.code=saved.code;
+  if(saved.mode==="send"){S.mode="send";drawCode();render();hostConnect()}
+  else{S.mode="recv";render();join(saved.code)}
+}
+})();
+</script>
+
+</body>
+</html>
