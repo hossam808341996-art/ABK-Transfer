@@ -1,0 +1,69 @@
+name: ABK Islamic Pro public APK
+on:
+  push:
+    branches: [abk-islamic-public-download]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Unpack isolated Flutter app
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir app
+          base64 --decode ci/abk-islamic-pro.bundle.b64 > /tmp/abk-islamic-pro.zip
+          unzip -q /tmp/abk-islamic-pro.zip -d app
+      - name: Configure Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Flutter 3.29.3
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.29.3'
+          cache: true
+      - name: Generate Android wrapper
+        working-directory: app
+        run: python3 tool/prepare_android.py
+      - name: Fetch Flutter packages
+        working-directory: app
+        run: flutter pub get
+      - name: Check Flutter code
+        working-directory: app
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+      - name: Run Flutter tests
+        working-directory: app
+        run: flutter test
+      - name: Build debug APK
+        working-directory: app
+        run: flutter build apk --debug
+      - name: Verify built APK
+        run: |
+          set -euo pipefail
+          test -s app/build/app/outputs/flutter-apk/app-debug.apk
+          sha256sum app/build/app/outputs/flutter-apk/app-debug.apk
+          cp app/build/app/outputs/flutter-apk/app-debug.apk ABK-ISLAMIC-PRO-v0.2.0-Android.apk
+      - name: Publish public GitHub prerelease download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create abk-islamic-pro-0.2.0-public \
+            ABK-ISLAMIC-PRO-v0.2.0-Android.apk \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${GITHUB_SHA}" \
+            --prerelease \
+            --title "ABK ISLAMIC PRO 0.2.0 - Android APK" \
+            --notes "Installable test APK. Not a production-signed Google Play release. Contents are an initial limited curated collection; device sensor and notification behavior requires real device testing. App updates are not automatic."
