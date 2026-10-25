@@ -18,6 +18,22 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Bundle offline face recognition engine and model
+        run: |
+          set -euxo pipefail
+          mkdir -p android-greencard/app/src/main/assets/www/mediapipe/wasm
+          npm install --prefix /tmp/abk-mediapipe --no-audit --no-fund --ignore-scripts --no-save @mediapipe/tasks-vision@0.10.22
+          LIB=/tmp/abk-mediapipe/node_modules/@mediapipe/tasks-vision
+          DEST=android-greencard/app/src/main/assets/www/mediapipe
+          cp "$LIB/vision_bundle.mjs" "$DEST/vision_bundle.mjs"
+          cp "$LIB"/wasm/* "$DEST/wasm/"
+          curl --fail --location --retry 4 --connect-timeout 15 --max-time 240 "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task" --output "$DEST/face_landmarker.task"
+          test "$(stat -c%s "$DEST/face_landmarker.task")" -gt 1000000
+          test "$(stat -c%s "$DEST/vision_bundle.mjs")" -gt 50000
+          test -s "$DEST/wasm/vision_wasm_internal.wasm"
+          test -s "$DEST/wasm/vision_wasm_internal.js"
+          du -h "$DEST"/face_landmarker.task "$DEST"/vision_bundle.mjs "$DEST"/wasm/*
+
       - name: Build Android APK
         working-directory: android-greencard
         run: gradle --no-daemon :app:assembleDebug
@@ -31,9 +47,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp android-greencard/app/build/outputs/apk/debug/app-debug.apk ABK-GREEN-CARD-PHOTO-PRO.apk
-          TAG="abk-green-card-photo-v1.1.0-public"
+          TAG="abk-green-card-photo-v1.2.0-public"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" ABK-GREEN-CARD-PHOTO-PRO.apk --clobber
           else
-            gh release create "$TAG" ABK-GREEN-CARD-PHOTO-PRO.apk --target "$GITHUB_SHA" --title "ABK Green Card Photo Pro Android APK v1.1.0" --notes "Android APK camera app. Debug-signed testing release. Automated photo checks cannot guarantee official acceptance."
+            gh release create "$TAG" ABK-GREEN-CARD-PHOTO-PRO.apk --target "$GITHUB_SHA" --title "ABK Green Card Photo Pro Android APK v1.2.0" --notes "Android APK camera app. Debug-signed testing release. Offline MediaPipe bundled. Automated photo checks cannot guarantee official acceptance."
           fi
