@@ -23,10 +23,10 @@
 <section class="card"><div class="card-inside"><h2>تأكيدات لا تستطيع الكاميرا إثباتها</h2><p class="hint">التأكيدات إلزامية، ولا تعتبر فحصًا آليًا لهذه الشروط.</p><div class="conditions"><label class="condition"><input id="g1" type="checkbox"> <span>لا أرتدي نظارات أو سماعات أو غطاء رأس غير مستثنى حسب التعليمات، والوجه ظاهر بالكامل.</span></label><label class="condition"><input id="g2" type="checkbox"> <span>أرتدي ملابس يومية عادية، ولا أستخدم فلتر جمال أو تعديلًا للوجه أو الخلفية.</span></label><label class="condition"><input id="g3" type="checkbox"> <span>الصورة حديثة (خلال آخر 6 أشهر)، وتُظهر مظهري الحالي، ومن أعلى الشعر إلى أسفل الذقن بالكامل داخل الإطار.</span></label></div></div></section>
 <section class="card"><div class="card-inside"><h2>مواصفات الإخراج</h2><div class="rules"><strong>600 × 600 px</strong> · صورة ملونة JPEG · حد أقصى <strong>240 KB</strong> · بدون إزالة الخلفية أو تعديل ملامح الوجه. يتم قص الصورة وتحجيمها فقط ثم ضغطها عند الحاجة.</div><div class="disclaimer">⚠ الفحص التقريبي لحجم الرأس لا يقيس حدود الشعر بدقة مطلقة، وفحص الخلفية والحدة والتعبير ليس اختبار قبول رسميًا. حتى الأداة الرسمية لا تضمن قبول الصورة؛ المراجعة النهائية بشرية.</div><p class="small">المصدر: <a href="https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html" target="_blank" rel="noopener">US Department of State</a></p></div></section>
 </div></div>
-</main><div class="footer">ABK Green Card Photo Pro — الإصدار 1.0. يُفضّل التصوير بإضاءة طبيعية أمام حائط أبيض، دون نظارات أو فلاتر.</div>
+</main><div class="footer">ABK Green Card Photo Pro — الإصدار 1.2. يُفضّل التصوير بإضاءة طبيعية أمام حائط أبيض، دون نظارات أو فلاتر.</div>
 <canvas id="work" width="600" height="600" hidden></canvas>
 <script type="module">
-// All photo pixels and face landmarks stay on this device. Remote URLs fetch only the face-detection engine and model.
+// All photo pixels and face landmarks stay on this device. The face detection library and model are bundled in the Android APK; no CDN required.
 const $=id=>document.getElementById(id);
 const defs=[
 ['face','وجه واحد فقط','يُكشف وجه واحد واضح في الإطار'],
@@ -49,7 +49,31 @@ const setNotice=(m,isError=false)=>{$('notice').textContent=m;$('notice').classN
 function setBusy(on,m='جارِ معالجة الصورة...'){busy=on;$('busy').classList.toggle('show',on);$('busy').textContent=m;ui();}
 function setState(id,ok,reason){state[id]={ok:!!ok,reason:ok?'':reason};}
 function resetChecks(){for(let d of defs)setState(d[0],false,'بانتظار الفحص');stable=0;ui();}
-async function initEngine(){if(engine)return engine;if(modelLoading)return modelLoading;modelLoading=(async()=>{setNotice('جارِ تحميل نموذج فحص الوجه لأول مرة. يتطلب الاتصال بالإنترنت.');let vision=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs');let files=await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm');let config={baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',delegate:'CPU'},runningMode:'IMAGE',numFaces:2,outputFaceBlendshapes:true};engine=await vision.FaceLandmarker.createFromOptions(files,config);return engine})();try{return await modelLoading}catch(e){modelLoading=null;setNotice('تعذّر تحميل محرك فحص الوجه. تحقق من الإنترنت وأعد المحاولة. لن يُسمح بحفظ صورة غير مفحوصة. '+(e.message||''),true);throw e}}
+async function initEngine(){
+ if(engine)return engine;
+ if(modelLoading)return modelLoading;
+ modelLoading=(async()=>{
+   setNotice('جارِ تهيئة فحص الوجه من الملفات الموجودة داخل التطبيق...');
+   const vision=await import('./mediapipe/vision_bundle.mjs');
+   const files=await vision.FilesetResolver.forVisionTasks(new URL('./mediapipe/wasm',document.baseURI).href);
+   const config={
+     baseOptions:{
+       modelAssetPath:new URL('./mediapipe/face_landmarker.task',document.baseURI).href,
+       delegate:'CPU'
+     },
+     runningMode:'IMAGE',numFaces:2,outputFaceBlendshapes:true
+   };
+   engine=await vision.FaceLandmarker.createFromOptions(files,config);
+   return engine;
+ })();
+ try{return await modelLoading}
+ catch(e){
+   modelLoading=null;
+   setNotice('تعذّر تشغيل نموذج فحص الوجه المحلي. لا يُسمح بالحفظ قبل إكمال الفحص. '+(e.message||''),true);
+   throw e;
+ }
+}
+
 function cropToSquare(img,w,h){if(w<600||h<600)throw Error('دقة الكاميرا/الصورة أقل من 600 بكسل. استخدم كاميرا أعلى دقة.');let side=Math.min(w,h),sx=(w-side)/2,sy=(h-side)/2;ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,side,side,0,0,600,600);ctx.restore()}
 function backgroundTest(data){const {data:d,width:w,height:h}=data;let patches=[];const pos=[[.04,.04],[.15,.045],[.85,.045],[.96,.04],[.05,.18],[.95,.18],[.055,.30],[.945,.30],[.055,.44],[.945,.44]];let totals=[];for(let [x,y]of pos){let nr=0,pass=0,sum=0,sum2=0;const ix=Math.round(x*w),iy=Math.round(y*h);for(let yy=-8;yy<=8;yy+=2)for(let xx=-8;xx<=8;xx+=2){let px=clamp(ix+xx,0,w-1),py=clamp(iy+yy,0,h-1),i=(py*w+px)*4,r=d[i],g=d[i+1],b=d[i+2];let lum=.2126*r+.7152*g+.0722*b;nr++;sum+=lum;sum2+=lum*lum;if(r>=195&&g>=192&&b>=180&&Math.max(r,g,b)-Math.min(r,g,b)<=36)pass++;}patches.push(pass/nr);totals.push(sum/nr)}let fraction=patches.filter(x=>x>=.83).length/patches.length;let mu=totals.reduce((a,b)=>a+b,0)/totals.length;let dev=Math.sqrt(totals.reduce((a,b)=>a+(b-mu)**2,0)/totals.length);return {ok:fraction>=.9&&dev<23,reason:fraction<.9?'ابتعد عن الخلفية أو استخدم حائطًا أبيض موحدًا': 'خفّف الظلال على الخلفية'};}
 function clarityTest(data,box){const d=data.data,w=data.width,h=data.height;let bx=clamp(Math.floor(box.x*w),0,w-2),by=clamp(Math.floor(box.y*h),0,h-2),ex=clamp(Math.ceil((box.x+box.width)*w),1,w),ey=clamp(Math.ceil((box.y+box.height)*h),1,h);let sx=Math.max(2,Math.floor((ex-bx)/95)),sy=Math.max(2,Math.floor((ey-by)/95));let total=0,energy=0,bright=0,brightSq=0,left=0,right=0,nl=0,nr=0;for(let y=by+sy;y<ey-sy;y+=sy){for(let x=bx+sx;x<ex-sx;x+=sx){let i=(y*w+x)*4;let lum=(idx)=>.2126*d[idx]+.7152*d[idx+1]+.0722*d[idx+2];let v=lum(i),gx=Math.abs(lum(i+4*sx)-lum(i-4*sx)),gy=Math.abs(lum(i+w*4*sy)-lum(i-w*4*sy));energy+=(gx+gy)/2;bright+=v;brightSq+=v*v;total++;if(x<(bx+ex)/2){left+=v;nl++;}else{right+=v;nr++}}}if(!total)return {ok:false,reason:'حرك الوجه إلى وسط الكاميرا'};let avg=bright/total,variance=brightSq/total-avg*avg,edge=energy/total,diff=Math.abs(left/Math.max(1,nl)-right/Math.max(1,nr));return {ok:avg>=69&&avg<=224&&edge>=12&&variance>=220&&diff<44,reason:avg<69?'إضاءة ضعيفة على الوجه':avg>224?'الإضاءة قوية جدًا':diff>=44?'هناك ظل قوي على جانب الوجه':'الصورة غير واضحة؛ نظّف العدسة وثبّت الهاتف'};}
@@ -57,7 +81,43 @@ function analyze(){const res=engine.detect(canvas);const faces=res.faceLandmarks
 async function assess(){if(!engine)return false;analyze();let count=defs.filter(d=>state[d[0]].ok).length;stable=count===8?stable+1:0;ui();return count===8}
 async function tick(){if(busy||!engine)return;try{if(source==='camera'){if(!stream||video.readyState<2)return;cropToSquare(video,video.videoWidth,video.videoHeight)}else if(imageObj){cropToSquare(imageObj,imageObj.naturalWidth,imageObj.naturalHeight)}else return;await assess()}catch(e){stable=0;setNotice('تعذّر إكمال الفحص: '+e.message,true);ui()}}
 function stop(){if(interval){clearInterval(interval);interval=null}if(stream){for(let track of stream.getTracks())track.stop();stream=null}video.srcObject=null}
-async function startCamera(){setBusy(true,'جارِ فتح الكاميرا وتحميل الفحص...');stop();$('selectedImage').style.display='none';video.style.display='block';imageObj=null;source='camera';$('result').classList.remove('show');lastBlob=null;try{if(!navigator.mediaDevices?.getUserMedia)throw Error('يجب فتح البرنامج على HTTPS أو localhost في Chrome والسماح بالكاميرا.');await initEngine();stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1920,min:640},height:{ideal:1080,min:640}}});video.srcObject=stream;video.classList.toggle('mirror',facing==='user');await video.play();$('placeholder').style.display='none';$('flip').disabled=false;$('start').textContent='↻ إعادة تشغيل';resetChecks();interval=setInterval(tick,700);setNotice('تحرّك داخل الإطار حتى تكتمل الفحوصات. لا تُحفظ أي صورة قبل قبول فحصها.')}catch(e){$('placeholder').style.display='grid';setNotice('لا يمكن بدء الكاميرا: '+(e.message||'تحقق من إذن الوصول والإتصال بالإنترنت'),true)}finally{setBusy(false)}}
+async function startCamera(){
+ setBusy(true,'جارِ تشغيل الكاميرا...');
+ stop();
+ $('selectedImage').style.display='none';
+ video.style.display='block';
+ imageObj=null;source='camera';
+ $('result').classList.remove('show');
+ lastBlob=null;
+ try{
+   if(!navigator.mediaDevices?.getUserMedia)
+     throw Error('لا يسمح النظام بتشغيل الكاميرا. تأكد من أذونات كاميرا التطبيق في إعدادات الهاتف.');
+   stream=await navigator.mediaDevices.getUserMedia({
+     audio:false,
+     video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080}}
+   });
+   video.srcObject=stream;
+   video.classList.toggle('mirror',facing==='user');
+   await video.play();
+   $('placeholder').style.display='none';
+   $('flip').disabled=false;
+   $('start').textContent='↻ إعادة تشغيل';
+   resetChecks();
+   setNotice('الكاميرا تعمل. جارِ بدء فحص الوجه المحلي...');
+   try {
+     await initEngine();
+     interval=setInterval(tick,700);
+     setNotice('حرّك وجهك داخل الإطار حتى تكتمل الفحوصات. لا يُسمح بالحفظ قبل اجتياز جميع الشروط.');
+   }catch(modelError){
+     setNotice('الكاميرا تعمل لكن محرك الفحص لم يبدأ: '+(modelError.message||'خطأ غير معروف')+'. لا يُسمح بالحفظ حتى يعمل الفحص.',true);
+   }
+ }catch(e){
+   stop();
+   $('placeholder').style.display='grid';
+   setNotice('تعذّر فتح الكاميرا: '+(e.message||'تحقق من إذن الكاميرا'),true);
+ }finally{setBusy(false)}
+}
+
 $('start').addEventListener('click',startCamera);$('flip').addEventListener('click',async()=>{facing=facing==='user'?'environment':'user';await startCamera()});$('pick').addEventListener('click',()=>$('file').click());
 $('file').addEventListener('change',async(ev)=>{let file=ev.target.files[0];if(!file)return;stop();setBusy(true,'جارِ تحميل وفحص الصورة الموجودة...');source='file';lastBlob=null;$('result').classList.remove('show');$('flip').disabled=true;try{await initEngine();let url=URL.createObjectURL(file);let img=new Image();img.onerror=()=>URL.revokeObjectURL(url);img.src=url;await img.decode();imageObj=img;video.style.display='none';$('selectedImage').src=url;$('selectedImage').style.display='block';$('placeholder').style.display='none';if(img.naturalWidth<600||img.naturalHeight<600)throw Error('الصورة أقل من 600×600 بكسل');resetChecks();for(let i=0;i<3;i++){cropToSquare(img,img.naturalWidth,img.naturalHeight);await assess()}interval=setInterval(tick,900);setNotice('تم فحص الصورة. لن يتاح حفظها إلا عند اكتمال المؤشرات وتأكيد الشروط.')}catch(e){resetChecks();setNotice('فشل فحص الصورة: '+e.message,true)}finally{setBusy(false);ev.target.value=''}});
 function toBlobAsync(can,q){return new Promise((resolve,reject)=>can.toBlob(x=>x?resolve(x):reject(Error('تعذّر ضغط الصورة')),'image/jpeg',q))}
