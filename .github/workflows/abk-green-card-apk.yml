@@ -22,7 +22,7 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p android-greencard/app/src/main/assets/www/mediapipe/wasm
-          npm install --prefix /tmp/abk-mediapipe --no-audit --no-fund --ignore-scripts --no-save @mediapipe/tasks-vision@0.10.22
+          npm install --prefix /tmp/abk-mediapipe --no-audit --no-fund --ignore-scripts --no-save @mediapipe/tasks-vision@0.10.21
           LIB=/tmp/abk-mediapipe/node_modules/@mediapipe/tasks-vision
           DEST=android-greencard/app/src/main/assets/www/mediapipe
           cp "$LIB/vision_bundle.mjs" "$DEST/vision_bundle.mjs"
