@@ -148,12 +148,24 @@ public class MainActivity extends Activity {
                 reply(s, 405, "text/plain", "Not allowed".getBytes(StandardCharsets.UTF_8)); return;
             }
             String path = req[1].split("\\?", 2)[0];
-            if (!"/index.html".equals(path) && !"/".equals(path)) {
-                reply(s, 404, "text/plain", "Not found".getBytes(StandardCharsets.UTF_8)); return;
+            String assetPath;
+            if ("/".equals(path) || "/index.html".equals(path)) {
+                assetPath = "www/index.html";
+            } else if (path.startsWith("/mediapipe/") &&
+                       path.matches("/mediapipe/[a-zA-Z0-9_./-]+") &&
+                       !path.contains("..") && !path.contains("//")) {
+                assetPath = "www" + path;
+            } else {
+                reply(s, 404, "text/plain", "Not found".getBytes(StandardCharsets.UTF_8));
+                return;
             }
-            byte[] html;
-            try (InputStream f = getAssets().open("www/index.html")) { html = readAll(f); }
-            reply(s, 200, "text/html; charset=utf-8", html);
+            String mime = "application/octet-stream";
+            if (path.endsWith(".html") || "/".equals(path)) mime = "text/html; charset=utf-8";
+            else if (path.endsWith(".mjs") || path.endsWith(".js")) mime = "text/javascript; charset=utf-8";
+            else if (path.endsWith(".wasm")) mime = "application/wasm";
+            byte[] bytes;
+            try (InputStream f = getAssets().open(assetPath)) { bytes = readAll(f); }
+            reply(s, 200, mime, bytes);
         } catch (Exception ignored) {}
     }
 
