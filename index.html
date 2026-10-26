@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0b0c">
+  <meta name="description" content="ABK Transfer — نقل الملفات والمجلدات بين أجهزتك بسرعة وبشكل مباشر أو عبر مسار آمن عند الحاجة.">
+  <title>ABK Transfer — نقل ملفات ومجلدات بين الأجهزة</title>
+  <link rel="preload" as="video" type="video/mp4" href="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261005_115944_095d91d4-030f-4e82-b42b-a388c0816d24.mp4">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a0b0c'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23D6523A' stroke-width='3' stroke-dasharray='106 52' transform='rotate(-18 32 32)'/%3E%3Cpath d='M18 42 27 20h5l7 22h-5l-2-6h-7l-2 6h-5Zm8.5-11h4L28.5 25l-2 6Zm14.5-11h5v9l7-9h6l-8 10 9 12h-6l-8-11v11h-5V20Z' fill='%23F7F5EF'/%3E%3C/svg%3E">
+  <style>
+@font-face{font-family:Display;src:local("Oswald ExtraBold"),local("Bebas Neue"),local("Impact");font-weight:800;font-display:block;ascent-override:99.9%;descent-override:20.1%;line-gap-override:0%}
+@font-face{font-family:UI;src:local("Oswald Bold"),local("Barlow Condensed Bold"),local("Arial Narrow Bold");font-weight:700;font-display:block;ascent-override:95%;descent-override:22.5%;line-gap-override:0%}
+@font-face{font-family:UI;src:local("Oswald Regular"),local("Barlow Condensed Regular"),local("Arial Narrow");font-weight:400;font-display:block;ascent-override:95%;descent-override:22.5%;line-gap-override:0%}
+:root{--cream:#F7F5EF;--white:#F9F9F9;--ink:rgba(255,255,255,.86);--muted:rgba(247,245,239,.63);--accent:#D6523A;--line:rgba(247,245,239,.22);--panel:rgba(9,10,11,.60);--ok:#87d7b1;--danger:#ff8a75;--cover:max(calc(100vw / 1280px),calc(100vh / 800px))}
+*{box-sizing:border-box}html,body{width:100%;height:100%}body{margin:0;background:#0a0b0c;overflow:hidden;color:var(--cream);font-family:UI,system-ui,sans-serif;font-kerning:none;font-variant-ligatures:none;font-feature-settings:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
+button,input{font:inherit}.frame{position:fixed;inset:0;overflow:hidden;background:#0a0b0c}.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;background:#0a0b0c}.tint{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.118) 0%,rgba(0,0,0,.092) 11%,rgba(0,0,0,.083) 20%,rgba(0,0,0,.079) 29%,rgba(0,0,0,.014) 37.5%,rgba(0,0,0,.016) 46%,rgba(0,0,0,.043) 55%,rgba(0,0,0,.058) 64%,rgba(0,0,0,.062) 73%,rgba(0,0,0,.080) 81%,rgba(0,0,0,.090) 90%,rgba(0,0,0,.095) 100%),linear-gradient(90deg,rgba(0,0,0,.38),rgba(0,0,0,.02) 35%,rgba(0,0,0,.02) 65%,rgba(0,0,0,.38))}.grain{position:absolute;inset:0;pointer-events:none;opacity:.12;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.23'/%3E%3C/svg%3E")}
+.stage{position:absolute;inset:0;overflow:hidden}.topbar{position:absolute;z-index:20;top:max(20px,env(safe-area-inset-top));left:max(26px,env(safe-area-inset-left));right:max(26px,env(safe-area-inset-right));height:54px;display:flex;align-items:center;justify-content:space-between}.brand{border:0;background:transparent;color:var(--cream);display:flex;align-items:center;gap:11px;padding:0;cursor:pointer;text-align:left}.brand-mark{width:42px;height:42px;color:var(--accent);filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}.brand-copy{display:flex;align-items:flex-end;gap:8px;direction:ltr}.brand-copy b{font:800 20px/1 Display,system-ui,sans-serif;letter-spacing:.04em}.brand-copy small{font:700 8px/1 UI,system-ui,sans-serif;letter-spacing:.28em;opacity:.72;margin-bottom:2px}.top-status{direction:ltr;display:flex;align-items:center;gap:9px;font:700 9px/1 UI,system-ui,sans-serif;letter-spacing:.22em;color:rgba(247,245,239,.72)}.status-dot,.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px rgba(214,82,58,.12)}
+.view{position:absolute;inset:0}.hidden{display:none!important}.home-view{direction:ltr}.eyebrow{position:absolute;left:0;top:9.4vh;width:100%;margin:0;text-align:center;text-transform:uppercase;font:700 clamp(8px,.58vw,11px)/1 UI,system-ui,sans-serif;letter-spacing:.304em;text-indent:.304em;color:var(--cream);text-shadow:0 1px 3px rgba(0,0,0,.45)}.headline{position:absolute;left:0;top:11.2vh;width:100%;margin:0;text-align:center;text-transform:uppercase;font:800 clamp(48px,4.82vw,78px)/.86 Display,system-ui,sans-serif;word-spacing:.0436em;color:var(--cream);text-shadow:0 15px 36px rgba(0,0,0,.50)}.headline span{display:block;white-space:nowrap;letter-spacing:-.012em}.center-mark{position:absolute;left:50%;top:61%;width:52px;height:52px;transform:translate(-50%,-50%);overflow:visible}.feature{position:absolute;top:68.5%;width:min(28vw,360px);color:var(--white)}.f-left{right:calc(50% + clamp(82px,9vw,145px));text-align:right}.f-right{left:calc(50% + clamp(82px,9vw,145px));text-align:left}.feature-icon{display:block;width:35px;height:38px;margin-bottom:17px}.f-left .feature-icon{margin-left:auto;margin-right:-4px}.f-right .feature-icon{margin-right:auto;margin-left:-3px}.feature h2{margin:0 0 9px;font:700 clamp(17px,1.45vw,23px)/1.02 UI,system-ui,sans-serif;letter-spacing:-.018em;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.4)}.feature h2 span{display:block}.feature p{direction:rtl;margin:0;font:400 clamp(11px,.95vw,14px)/1.4 UI,system-ui,sans-serif;color:var(--ink);text-shadow:0 1px 3px rgba(0,0,0,.35)}.home-actions{position:absolute;left:50%;bottom:4.4vh;transform:translateX(-50%);display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(520px,76vw);direction:rtl}.action{min-height:64px;border:1px solid rgba(247,245,239,.32);background:rgba(5,6,7,.58);backdrop-filter:blur(10px);color:var(--cream);padding:10px 15px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:11px;text-align:right;cursor:pointer;transition:.2s}.action:hover{background:rgba(9,10,11,.76);border-color:rgba(247,245,239,.58)}.action-primary{border-color:rgba(214,82,58,.72);box-shadow:inset 0 -2px 0 var(--accent)}.action-num{grid-row:1/3;align-self:center;color:var(--accent);font:700 10px/1 UI;letter-spacing:.15em}.action b{font:700 16px/1.05 UI}.action small{font:400 11px/1.25 UI;color:var(--muted)}.rail-label{position:absolute;right:22px;top:50%;z-index:3;transform:translateY(-50%) rotate(90deg) translateX(50%);transform-origin:right top;direction:ltr;font:700 7px/1 UI;letter-spacing:.24em;color:rgba(247,245,239,.42);white-space:nowrap}
+.operation-view{z-index:10;display:grid;place-items:center;padding:max(86px,calc(env(safe-area-inset-top) + 74px)) 22px max(22px,env(safe-area-inset-bottom));direction:rtl}.operation-shell{width:min(980px,92vw);max-height:calc(100vh - 116px);overflow:auto;scrollbar-width:thin;scrollbar-color:rgba(247,245,239,.35) transparent;background:linear-gradient(180deg,rgba(9,10,11,.74),rgba(9,10,11,.60));border:1px solid rgba(247,245,239,.22);backdrop-filter:blur(16px);box-shadow:0 28px 80px rgba(0,0,0,.36);padding:26px}.operation-head{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:start;margin-bottom:20px}.back{border:0;background:none;color:var(--cream);cursor:pointer;padding:3px 0;font:700 12px/1 UI;letter-spacing:.08em}.back span{color:var(--accent);margin-right:5px}.op-kicker,.label{display:block;direction:ltr;text-align:right;font:700 8px/1 UI;letter-spacing:.25em;color:var(--accent);margin-bottom:8px}.operation-head h2{margin:0;max-width:720px;font:800 clamp(27px,3.4vw,54px)/.95 Display,UI,sans-serif;text-transform:uppercase;color:var(--cream)}.code-box{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;display:flex;align-items:end;justify-content:space-between;gap:18px}.code{direction:ltr;text-align:left;font:800 clamp(40px,6vw,76px)/.9 Display,system-ui,sans-serif;letter-spacing:.14em;color:var(--cream);font-variant-numeric:tabular-nums}.code-actions,.picker-actions{display:flex;gap:8px;flex-wrap:wrap}.mini-btn,.cta{border:1px solid var(--line);background:var(--cream);color:#111315;min-height:40px;padding:9px 14px;font:700 12px/1 UI;cursor:pointer;transition:.18s}.mini-btn:hover,.cta:hover{transform:translateY(-1px)}.mini-btn.ghost,.cta.secondary{background:rgba(8,9,10,.52);color:var(--cream)}.status-line{min-height:44px;display:flex;align-items:center;gap:10px;color:var(--ink);font:400 13px/1.4 UI;border-bottom:1px solid rgba(247,245,239,.12)}.dot{background:#c79760}.dot.on{background:var(--ok);box-shadow:0 0 0 5px rgba(135,215,177,.12)}.dropzone{margin-top:17px;min-height:200px;border:1px dashed rgba(247,245,239,.34);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:22px;padding:24px;transition:.2s;background:rgba(0,0,0,.16)}.dropzone.drag{border-color:var(--accent);background:rgba(214,82,58,.09)}.dropzone.disabled{opacity:.46}.upload-symbol{width:58px;height:58px;border:1px solid rgba(247,245,239,.33);display:grid;place-items:center;position:relative}.upload-symbol span,.upload-symbol i{position:absolute;background:var(--cream);display:block}.upload-symbol span{width:22px;height:2px}.upload-symbol i{height:22px;width:2px}.drop-copy b{display:block;font:700 18px/1.1 UI;margin-bottom:7px}.drop-copy small,.receive-tools small{display:block;color:var(--muted);font:400 12px/1.45 UI}.cta:disabled,.mini-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}.queue{display:grid;gap:8px;margin-top:13px}.file-card{border:1px solid rgba(247,245,239,.16);background:rgba(0,0,0,.28);padding:12px 14px}.file-row{display:flex;align-items:center;justify-content:space-between;gap:14px}.file-main{min-width:0}.file-main b{display:block;max-width:640px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 13px/1.25 UI}.file-main small{color:var(--muted);font:400 10px/1.2 UI}.file-badge{white-space:nowrap;color:var(--ink);font:700 10px/1 UI}.bar{height:3px;background:rgba(247,245,239,.12);margin-top:10px;overflow:hidden}.bar i{display:block;width:0;height:100%;background:var(--accent);transition:width .15s}.download{display:inline-block;margin-top:9px;color:var(--cream);border-bottom:1px solid var(--accent);text-decoration:none;font:700 11px/1.2 UI;padding-bottom:2px}.join-block{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0}.join-row{display:grid;grid-template-columns:1fr auto;gap:10px}.join-row input{direction:ltr;width:100%;height:66px;border:1px solid rgba(247,245,239,.36);background:rgba(0,0,0,.30);outline:none;color:var(--cream);text-align:center;font:800 clamp(30px,5vw,55px)/1 Display;letter-spacing:.18em}.join-row input:focus{border-color:var(--accent)}.receive-tools{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 0 8px}.receive-tools b{display:block;font:700 18px/1.1 UI;margin-bottom:5px}.toast{position:fixed;z-index:99;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,18px);opacity:0;pointer-events:none;background:#111315;border:1px solid rgba(247,245,239,.24);color:var(--cream);padding:11px 15px;font:700 12px/1.2 UI;transition:.2s;box-shadow:0 12px 35px rgba(0,0,0,.35)}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:no-preference){.eyebrow{animation:riseIn .55s cubic-bezier(.33,.9,.35,1) .15s both}.headline span{animation:lineIn .9s cubic-bezier(.16,1,.3,1) both}.headline .hl1{animation-delay:.28s}.headline .hl2{animation-delay:.37s}.headline .hl3{animation-delay:.46s}.headline .hl4{animation-delay:.55s}.center-mark{animation:markIn .7s cubic-bezier(.2,.9,.25,1) .72s both}.f-left{animation:blockInL .75s cubic-bezier(.16,1,.3,1) .82s both}.f-right{animation:blockInR .75s cubic-bezier(.16,1,.3,1) .9s both}.home-actions{animation:actionsIn .65s cubic-bezier(.16,1,.3,1) 1.02s both}@keyframes riseIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes lineIn{0%{opacity:0;transform:translateY(.26em);clip-path:inset(100% -30% 0 -30%)}35%{opacity:1}90%{clip-path:inset(0 -30% -100% -30%)}100%{opacity:1;transform:none;clip-path:inset(-80% -30% -100% -30%)}}@keyframes actionsIn{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}@keyframes markIn{from{opacity:0;transform:translate(-50%,-50%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}@keyframes blockInL{from{opacity:0;transform:translate(-12px,8px)}to{opacity:1;transform:none}}@keyframes blockInR{from{opacity:0;transform:translate(12px,8px)}to{opacity:1;transform:none}}}
+@media(min-width:610px) and (max-aspect-ratio:1/1){.eyebrow{top:10vh}.headline{top:13vh;font-size:clamp(58px,10.2vw,86px)}.center-mark{top:55%}.feature{top:auto;bottom:15%;width:31vw}.f-left{right:calc(50% + 78px)}.f-right{left:calc(50% + 78px)}.home-actions{bottom:3vh;width:min(580px,84vw)}.operation-shell{max-height:calc(100dvh - 124px)}}
+@media(max-width:609px){.frame{height:100vh;height:100dvh}.topbar{top:max(12px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));height:44px}.brand-mark{width:34px;height:34px}.brand-copy b{font-size:17px}.brand-copy small{font-size:6px}.top-status{font-size:6.5px;letter-spacing:.15em}.eyebrow{top:10.2vh;font-size:clamp(7px,2.2vw,9.5px)}.headline{top:13.4vh;font-size:clamp(36px,12.7vw,56px);line-height:.88}.center-mark{top:47%;width:44px;height:44px}.feature{top:auto;width:calc(50% - 36px);bottom:18.5%}.f-left{right:calc(50% + 23px)}.f-right{left:calc(50% + 23px)}.feature-icon{width:30px;height:33px;margin-bottom:9px}.feature h2{font-size:clamp(13px,4vw,17px);margin-bottom:5px}.feature p{font-size:clamp(9.5px,2.8vw,12px);line-height:1.3}.home-actions{bottom:max(2.2vh,env(safe-area-inset-bottom));width:calc(100% - 28px);gap:7px}.action{min-height:58px;padding:8px 10px}.action b{font-size:14px}.action small{font-size:9px}.rail-label{display:none}.operation-view{padding:max(68px,calc(env(safe-area-inset-top) + 58px)) 10px max(10px,env(safe-area-inset-bottom))}.operation-shell{width:100%;max-height:calc(100dvh - 78px);padding:16px;background:rgba(9,10,11,.76)}.operation-head{grid-template-columns:1fr;gap:12px;margin-bottom:15px}.operation-head h2{font-size:clamp(25px,8vw,38px)}.back{justify-self:start}.code-box{align-items:stretch;flex-direction:column}.code{font-size:clamp(44px,15vw,66px);text-align:center}.code-actions{justify-content:center}.dropzone{grid-template-columns:1fr;text-align:center;justify-items:center;gap:12px;padding:20px 12px;min-height:215px}.picker-actions{justify-content:center}.file-main b{max-width:62vw}.join-row{grid-template-columns:1fr}.join-row .cta{height:48px}.receive-tools{align-items:flex-end}.toast{max-width:88vw;text-align:center}}
+@media(max-height:640px) and (orientation:landscape){.eyebrow{top:9vh}.headline{top:12vh;font-size:clamp(38px,7vh,58px)}.center-mark{top:57%;width:42px;height:42px}.feature{top:64%;bottom:auto}.home-actions{bottom:2vh}.action{min-height:48px}.feature p{display:none}.feature-icon{margin-bottom:7px}.operation-view{padding-top:70px}.operation-shell{max-height:calc(100vh - 80px)}}
+
+
+#abk-chat{position:fixed;bottom:22px;right:22px;z-index:9999;font-family:system-ui,sans-serif;direction:rtl;color:#f7f5ef}
+#abk-chat-toggle{background:#d6523a;color:white;border:0;border-radius:50px;padding:13px 18px;cursor:pointer;box-shadow:0 8px 24px #0007;font-size:20px}
+#abk-chat-count:not(:empty){background:#fff;color:#b43a2a;border-radius:20px;padding:1px 6px;font-size:12px}
+#abk-chat-box{width:min(350px,calc(100vw - 30px));height:min(470px,calc(100dvh - 110px));background:#16191c;border:1px solid #ffffff33;border-radius:16px;box-shadow:0 15px 55px #000b;overflow:hidden;display:flex;flex-direction:column;margin-bottom:10px}
+#abk-chat-box[hidden]{display:none}
+.abk-chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px;background:#25292d}
+#abk-chat-close{background:transparent;color:white;border:0;cursor:pointer;font-size:18px}
+#abk-chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:12px}
+.abk-msg{max-width:85%;border-radius:12px;padding:9px 11px;background:#30363a;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:4px}
+.abk-msg.mine{align-self:flex-start;background:#854032}.abk-msg.theirs{align-self:flex-end}
+.abk-msg small{font-size:10px;opacity:.7;align-self:flex-end}
+#abk-chat-form{display:flex;gap:6px;padding:10px;border-top:1px solid #ffffff22}
+#abk-chat-input{flex:1;min-width:0;border-radius:8px;padding:10px;background:#292d30;border:1px solid #ffffff33;color:white}
+#abk-chat-form button{border:0;border-radius:8px;padding:8px;background:#d6523a;color:white;cursor:pointer}
+@media(max-width:609px){#abk-chat{bottom:12px;right:12px}}
+
+</style>
+</head>
+<body>
+<div class="frame">
+  <video class="bg" autoplay muted loop playsinline disablepictureinpicture aria-label="Aerial view of a container freight train crossing black coal terrain" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261005_115944_095d91d4-030f-4e82-b42b-a388c0816d24.mp4"></video>
+  <div class="tint"></div>
+  <div class="grain"></div>
+
+  <main class="stage">
+    <header class="topbar">
+      <button class="brand" id="brandHome" aria-label="ABK Transfer home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="106 52" transform="rotate(-18 32 32)"/>
+          <path d="M16.7 42 26.2 19.5h5.2L39 42h-5.1l-2-6.1h-7.3L22.1 42h-5.4Zm9.3-11h4.4l-2.2-6.5L26 31Zm15-11.5h5v9.1l7.1-9.1h6.1L51 29.8 60 42h-6.1l-8-11.1V42h-5V19.5Z" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="brand-copy"><b>ABK</b><small>TRANSFER</small></span>
+      </button>
+      <div class="top-status"><span class="status-dot"></span><span>DEVICE TO DEVICE</span></div>
+    </header>
+
+    <section id="home" class="view home-view">
+      <p class="eyebrow"><span>ABK TRANSFER</span></p>
+      <h1 class="headline" aria-label="Transfer that works as fast as you do">
+        <span class="hl1">TRANSFER</span>
+        <span class="hl2">THAT WORKS</span>
+        <span class="hl3">AS FAST AS</span>
+        <span class="hl4">YOU DO.</span>
+      </h1>
+
+      <svg class="center-mark" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+        <circle cx="26" cy="26" r="23" stroke="#D6523A" stroke-width="1.6" stroke-dasharray="98.3 46.3" transform="rotate(2.5 26 26)"/>
+        <g stroke="#D6523A" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="26.5" cy="26.1" r="2.3"/>
+          <path d="M28.9 27.6C31.6 29 32.9 31.2 31.8 33.3 30.7 35.4 27.2 36.1 24.2 35.1"/>
+        </g>
+      </svg>
+
+      <section class="feature f-left">
+        <svg class="feature-icon globe" viewBox="0 0 35 34" aria-hidden="true">
+          <defs><clipPath id="gclip"><circle cx="17.5" cy="17" r="9.8"/></clipPath></defs>
+          <circle cx="17.5" cy="17" r="16.5" fill="none" stroke="#F9F9F9" stroke-width="1.9" stroke-dasharray="3.6 3"/>
+          <circle cx="17.5" cy="17" r="9.8" fill="#F9F9F9"/>
+          <g stroke="#101215" stroke-width=".9" clip-path="url(#gclip)">
+            <path d="M11.9 7.2V26.8M17.5 7.2V26.8M23.1 7.2V26.8M7.7 11.4H27.3M7.7 17H27.3M7.7 22.6H27.3"/>
+          </g>
+        </svg>
+        <h2><span>ONE CODE.</span><span>ANY DEVICE.</span></h2>
+        <p>كود واحد يربط الهاتف والكمبيوتر والتابلت، بدون حسابات أو خطوات معقدة.</p>
+      </section>
+
+      <section class="feature f-right">
+        <svg class="feature-icon boxes" viewBox="0 0 35 38" aria-hidden="true">
+          <rect x=".5" y=".5" width="17" height="9.6" rx=".5" fill="#F9F9F9"/>
+          <rect x="10.5" y="13.5" width="13.5" height="10.9" rx=".5" fill="#F9F9F9"/>
+          <rect x="17.5" y="28.3" width="17" height="9.7" rx=".5" fill="#F9F9F9"/>
+          <g fill="#101215">
+            <path d="M2.5 2.5h1.1v1.9H2.5zm3.1 0h1.1v1.9H5.6zm3.1 0h1.1v1.9H8.7zm3.1 0h1.1v1.9h-1.1zm3.1 0H16v1.9h-1.1zM2.5 6.5h1.1v1.9H2.5zm3.1 0h1.1v1.9H5.6zm3.1 0h1.1v1.9H8.7zm3.1 0h1.1v1.9h-1.1zm3.1 0H16v1.9h-1.1z"/>
+            <path d="M12.5 15.2h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm-9.3 5.2h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1z"/>
+            <path d="M19.5 30.3h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0H33v1.9h-1.1zm-12.4 4.1h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0h1.1v1.9h-1.1zm3.1 0H33v1.9h-1.1z"/>
+          </g>
+        </svg>
+        <h2><span>FILES &amp;</span><span>FULL FOLDERS.</span></h2>
+        <p>اختر ملفات منفردة أو مجلدًا كاملًا وأرسله بنفس ترتيب المجلدات إلى الجهاز الآخر.</p>
+      </section>
+
+      <div class="home-actions">
+        <button id="sendMode" class="action action-primary"><span class="action-num">01</span><b>إرسال</b><small>إنشاء كود وبدء النقل</small></button>
+        <button id="receiveMode" class="action"><span class="action-num">02</span><b>استقبال</b><small>إدخال كود جهاز الإرسال</small></button>
+      </div>
+    </section>
+
+    <section id="sender" class="view operation-view hidden">
+      <div class="operation-shell">
+        <div class="operation-head">
+          <button class="back" type="button">رجوع <span>↗</span></button>
+          <div><span class="op-kicker">SEND / ABK TRANSFER</span><h2>شارك الكود ثم أرسل ملفاتك أو مجلدًا كاملًا.</h2></div>
+        </div>
+
+        <div class="code-box">
+          <div><span class="label">CONNECTION CODE</span><div id="roomCode" class="code">---</div></div>
+          <div class="code-actions">
+            <button id="copyCode" class="mini-btn">نسخ الكود</button>
+            <button id="copyLink" class="mini-btn ghost">نسخ رابط الاستقبال</button>
+          </div>
+        </div>
+
+        <div class="status-line"><span id="sendDot" class="dot"></span><span id="sendStatus">بانتظار الجهاز الآخر...</span></div>
+
+        <div id="dropZone" class="dropzone disabled">
+          <input id="fileInput" type="file" multiple hidden>
+          <input id="folderInput" type="file" webkitdirectory directory multiple hidden>
+          <div class="upload-symbol" aria-hidden="true"><span></span><i></i></div>
+          <div class="drop-copy"><b>اختر ما تريد إرساله</b><small>ملفات منفردة، مجلد كامل، أو اسحب المحتوى هنا</small></div>
+          <div class="picker-actions">
+            <button id="chooseFiles" class="cta" disabled>اختيار ملفات</button>
+            <button id="chooseFolder" class="cta secondary" disabled>اختيار مجلد كامل</button>
+          </div>
+        </div>
+
+        <div id="sendQueue" class="queue"></div>
+      </div>
+    </section>
+
+    <section id="receiver" class="view operation-view hidden">
+      <div class="operation-shell">
+        <div class="operation-head">
+          <button class="back" type="button">رجوع <span>↗</span></button>
+          <div><span class="op-kicker">RECEIVE / ABK TRANSFER</span><h2>أدخل كود الاتصال واستقبل الملفات فورًا.</h2></div>
+        </div>
+
+        <div id="joinBlock" class="join-block">
+          <span class="label">CONNECTION CODE</span>
+          <div class="join-row">
+            <input id="joinCode" inputmode="numeric" autocomplete="one-time-code" maxlength="3" placeholder="000" aria-label="Connection code">
+            <button id="joinBtn" class="cta">اتصال</button>
+          </div>
+        </div>
+
+        <div id="receiveBlock" class="hidden">
+          <div class="status-line success"><span class="dot on"></span><span id="receiveStatus">متصل — جاهز للاستقبال</span></div>
+          <div class="receive-tools">
+            <div><b>الملفات الواردة</b><small>يتم إظهار كل ملف عند اكتمال استلامه.</small></div>
+            <button id="saveAll" class="mini-btn ghost" disabled>حفظ الكل</button>
+          </div>
+          <div id="receivedFiles" class="queue"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rail-label">PRIVATE TRANSFER • DIRECT DEVICE TRANSFER • FREE REALTIME SIGNALING</div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const home = $('#home'), sender = $('#sender'), receiver = $('#receiver');
+const toastEl = $('#toast');
+
+const SUPABASE_REF = 'ycidvptfqrjinhnurccy';
+const SUPABASE_KEY = 'sb_publishable_8IeHZDOiS4gjvX-a_zvCjQ_6ikknmcj';
+
+class RealtimeRoom {
+  constructor(code, onBroadcast){
+    this.code=code;
+    this.topic=`realtime:abk-transfer-${code}`;
+    this.onBroadcast=onBroadcast;
+    this.ws=null; this.ref=0; this.joinRef=null; this.heartbeat=null; this.joinResolve=null; this.joinReject=null;
+  }
+  nextRef(){ return String(++this.ref); }
+  async connect(){
+    return new Promise((resolve,reject)=>{
+      this.joinResolve=resolve; this.joinReject=reject;
+      const url=`wss://${SUPABASE_REF}.supabase.co/realtime/v1/websocket?apikey=${encodeURIComponent(SUPABASE_KEY)}&vsn=1.0.0`;
+      const ws=this.ws=new WebSocket(url);
+      const timeout=setTimeout(()=>{ try{ws.close()}catch{}; reject(new Error('Realtime timeout')) },8000);
+      ws.onopen=()=>{
+        const ref=this.nextRef(); this.joinRef=ref;
+        ws.send(JSON.stringify({topic:this.topic,event:'phx_join',payload:{config:{broadcast:{ack:false,self:false},presence:{enabled:false},postgres_changes:[],private:false}},ref,join_ref:ref}));
+      };
+      ws.onmessage=e=>{
+        let m; try{m=JSON.parse(e.data)}catch{return}
+        if(m.event==='phx_reply' && m.ref===this.joinRef){
+          clearTimeout(timeout);
+          if(m.payload?.status==='ok'){
+            this.heartbeat=setInterval(()=>this.sendRaw('phoenix','heartbeat',{},null),20000);
+            const fn=this.joinResolve; this.joinResolve=this.joinReject=null; fn?.();
+          } else {
+            const fn=this.joinReject; this.joinResolve=this.joinReject=null; fn?.(new Error(m.payload?.response?.reason||'Join failed'));
+          }
+          return;
+        }
+        if(m.event==='broadcast' && m.topic===this.topic){
+          const event=m.payload?.event;
+          const payload=m.payload?.payload;
+          if(event) this.onBroadcast?.(event,payload);
+        }
+      };
+      ws.onerror=()=>{ if(this.joinReject){clearTimeout(timeout); const fn=this.joinReject;this.joinResolve=this.joinReject=null;fn(new Error('Realtime socket error'))} };
+      ws.onclose=()=>{ clearInterval(this.heartbeat); this.heartbeat=null; };
+    });
+  }
+  sendRaw(topic,event,payload,joinRef=this.joinRef){
+    if(!this.ws || this.ws.readyState!==WebSocket.OPEN) throw new Error('Realtime socket unavailable');
+    const ref=this.nextRef();
+    this.ws.send(JSON.stringify({topic,event,payload,ref,join_ref:joinRef}));
+  }
+  send(event,payload){
+    this.sendRaw(this.topic,'broadcast',{type:'broadcast',event,payload});
+    return Promise.resolve({status:'ok'});
+  }
+  close(){
+    clearInterval(this.heartbeat); this.heartbeat=null;
+    try{
+      if(this.ws?.readyState===WebSocket.OPEN) this.sendRaw(this.topic,'phx_leave',{},this.joinRef);
+      this.ws?.close();
+    }catch{}
+    this.ws=null;
+  }
+}
+
+let roomCode = null, role = null, rt = null, pc = null, channel = null;
+let selfId = crypto.randomUUID(), pendingCandidates = [];
+let iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+let currentIncoming = null, incomingChunks = [], receivedBytes = 0;
+let sendQueue = [], sending = false;
+let transport = 'pending';
+const completedFiles = new Map();
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>toastEl.classList.remove('show'),2100); }
+function show(view){ [home,sender,receiver].forEach(v=>v.classList.add('hidden')); view.classList.remove('hidden'); }
+function fmt(n){ if(n<1024)return `${n} B`; if(n<1024**2)return `${(n/1024).toFixed(1)} KB`; if(n<1024**3)return `${(n/1024**2).toFixed(1)} MB`; return `${(n/1024**3).toFixed(2)} GB`; }
+function safeSegment(name){ return String(name||'file').replace(/[<>:"/\\|?*\x00-\x1F]/g,'_').trim() || 'file'; }
+function safePath(path){ return String(path||'file').split('/').filter(Boolean).map(safeSegment).join('/'); }
+function basename(path){ const a=String(path||'file').split('/'); return safeSegment(a[a.length-1]); }
+
+function canSend(){ return !!roomCode && channel?.readyState==='open'; }
+function setSendingEnabled(on){ $('#chooseFiles').disabled=!on; $('#chooseFolder').disabled=!on; $('#dropZone').classList.toggle('disabled',!on); }
+function revokeCompleted(){ for(const x of completedFiles.values()) try{URL.revokeObjectURL(x.url)}catch{} completedFiles.clear(); $('#saveAll').disabled=true; }
+
+async function leaveRealtime(){
+  const old=rt; rt=null;
+  if(old) try{old.close()}catch{}
+}
+
+function resetConnection(){
+  try{channel?.close()}catch{} try{pc?.close()}catch{}
+  leaveRealtime();
+  pc=channel=null; roomCode=null; role=null; sendQueue=[]; sending=false; transport='pending'; pendingCandidates=[];
+  currentIncoming=null; incomingChunks=[]; receivedBytes=0; revokeCompleted();
+  $('#sendQueue').innerHTML=''; $('#receivedFiles').innerHTML=''; $('#roomCode').textContent='---'; $('#joinCode').value='';
+  $('#joinBlock').classList.remove('hidden'); $('#receiveBlock').classList.add('hidden'); setSendingEnabled(false);
+  $('#sendDot').classList.remove('on'); $('#sendStatus').textContent='بانتظار الجهاز الآخر...';
+  $('#joinBtn').disabled=false; $('#joinBtn').textContent='اتصال';
+}
+
+$('#brandHome').onclick=()=>{resetConnection();show(home)};
+document.querySelectorAll('.back').forEach(b=>b.onclick=()=>{resetConnection();show(home)});
+
+function randomCode(){ return String(Math.floor(100 + Math.random()*900)); }
+
+$('#sendMode').onclick=async()=>{
+  resetConnection(); show(sender); role='sender'; roomCode=randomCode(); $('#roomCode').textContent=roomCode;
+  try{ await startRealtime(); }
+  catch(e){ console.error(e); toast('تعذر إنشاء كود الاتصال'); }
+};
+
+$('#receiveMode').onclick=()=>{
+  resetConnection(); role='receiver'; show(receiver);
+  const q=new URLSearchParams(location.search).get('join');
+  if(q) $('#joinCode').value=q.replace(/\D/g,'').slice(0,3);
+};
+
+async function copyText(text,msg){ try{await navigator.clipboard.writeText(text);toast(msg)}catch{toast('تعذر النسخ تلقائيًا')} }
+$('#copyCode').onclick=()=>roomCode&&copyText(roomCode,'تم نسخ الكود');
+$('#copyLink').onclick=()=>{ if(!roomCode)return; const u=new URL(location.href);u.search='';u.searchParams.set('join',roomCode);copyText(u.toString(),'تم نسخ رابط الاستقبال'); };
+$('#joinCode').addEventListener('input',e=>e.target.value=e.target.value.replace(/\D/g,'').slice(0,3));
+$('#joinCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#joinBtn').click()});
+$('#joinBtn').onclick=async()=>{
+  const code=$('#joinCode').value.trim(); if(code.length!==3)return toast('أدخل كودًا من 3 أرقام');
+  roomCode=code; role='receiver'; $('#joinBtn').disabled=true; $('#joinBtn').textContent='جاري الاتصال...';
+  try{
+    await startRealtime();
+    setTimeout(()=>{ if(!$('#joinBlock').classList.contains('hidden')){ $('#joinBtn').disabled=false; $('#joinBtn').textContent='اتصال'; toast('لم يتم العثور على جهاز الإرسال بعد'); } },5000);
+  }catch(e){ console.error(e); $('#joinBtn').disabled=false; $('#joinBtn').textContent='اتصال'; toast('تعذر الاتصال الآن'); }
+};
+
+function sendBroadcast(event,payload){
+  if(!rt) return Promise.reject(new Error('Realtime channel unavailable'));
+  return rt.send(event,{...payload,from:role,id:selfId});
+}
+
+async function handleRealtimeBroadcast(event,payload){
+  if(payload?.id===selfId || payload?.from===role)return;
+  if(event==='hello'){
+    if(role!=='sender' || payload?.from!=='receiver')return;
+    $('#sendDot').classList.add('on'); $('#sendStatus').textContent='تم العثور على الجهاز الآخر — جاري إنشاء اتصال مباشر...';
+    await sendBroadcast('hello-ack',{});
+    if(!pc || ['failed','closed'].includes(pc.connectionState)){ try{await createSenderPeer()}catch(e){console.warn(e);toast('تعذر إنشاء الاتصال المباشر')} }
+  }else if(event==='hello-ack'){
+    if(role!=='receiver' || payload?.from!=='sender')return;
+    $('#joinBlock').classList.add('hidden'); $('#receiveBlock').classList.remove('hidden');
+    $('#joinBtn').disabled=false; $('#joinBtn').textContent='اتصال';
+    $('#receiveStatus').textContent='تم العثور على جهاز الإرسال — جاري إنشاء اتصال مباشر...';
+  }else if(event==='signal'){
+    try{await handleSignal(payload?.data)}catch(e){console.warn('signal',e)}
+  }else if(event==='message'){
+    window.ABKChat?.receive(payload?.message);
+  }
+}
+
+async function startRealtime(){
+  await leaveRealtime();
+  const room=new RealtimeRoom(roomCode,handleRealtimeBroadcast);
+  rt=room;
+  await room.connect();
+  if(role==='receiver') setTimeout(()=>sendBroadcast('hello',{}).catch(()=>{}),120);
+}
+
+async function postSignal(data){ return sendBroadcast('signal',{data}); }
+
+function basePeer(){
+  try{pc?.close()}catch{}
+  pendingCandidates=[];
+  pc=new RTCPeerConnection(iceConfig);
+  pc.onicecandidate=e=>{if(e.candidate)postSignal({type:'candidate',candidate:e.candidate}).catch(()=>{})};
+  pc.onconnectionstatechange=()=>{
+    const st=pc.connectionState;
+    if(st==='connected'){
+      transport='webrtc';
+      if(role==='sender'){ setSendingEnabled(true); $('#sendDot').classList.add('on'); $('#sendStatus').textContent='متصل مباشرة — جاهز لإرسال الملفات والمجلدات'; }
+      else $('#receiveStatus').textContent='متصل مباشرة — جاهز للاستقبال';
+    }
+    if(['failed','disconnected','closed'].includes(st) && roomCode){
+      transport='pending'; setSendingEnabled(false);
+      if(role==='sender') $('#sendStatus').textContent='تعذر الاتصال المباشر — اطلب من الجهاز الآخر إعادة الاتصال';
+      else $('#receiveStatus').textContent='انقطع الاتصال المباشر — أعد الاتصال بالكود';
+    }
+  };
+}
+
+async function flushCandidates(){
+  if(!pc?.remoteDescription)return;
+  while(pendingCandidates.length){ try{await pc.addIceCandidate(pendingCandidates.shift())}catch{} }
+}
+
+async function createSenderPeer(){
+  basePeer();
+  channel=pc.createDataChannel('files',{ordered:true}); bindChannel(channel);
+  const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
+  await postSignal({type:'offer',sdp:pc.localDescription});
+}
+
+async function handleSignal(data){
+  if(!data)return;
+  if(data.type==='offer'){
+    if(!pc){basePeer();pc.ondatachannel=e=>{channel=e.channel;bindChannel(channel)}}
+    await pc.setRemoteDescription(data.sdp); await flushCandidates();
+    const answer=await pc.createAnswer(); await pc.setLocalDescription(answer);
+    await postSignal({type:'answer',sdp:pc.localDescription});
+  }else if(data.type==='answer'&&pc){
+    await pc.setRemoteDescription(data.sdp); await flushCandidates();
+  }else if(data.type==='candidate'){
+    if(pc?.remoteDescription) { try{await pc.addIceCandidate(data.candidate)}catch{} }
+    else pendingCandidates.push(data.candidate);
+  }
+}
+
+function bindChannel(ch){
+  ch.binaryType='arraybuffer';
+  ch.bufferedAmountLowThreshold=1024*1024;
+  ch.onopen=()=>{
+    transport='webrtc';
+    if(role==='sender'){setSendingEnabled(true);$('#sendStatus').textContent='متصل مباشرة — جاهز لإرسال الملفات والمجلدات'}
+    else $('#receiveStatus').textContent='متصل مباشرة — جاهز للاستقبال';
+  };
+  ch.onclose=()=>{
+    transport='pending';setSendingEnabled(false);
+    if(role==='sender'&&roomCode)$('#sendStatus').textContent='انقطع الاتصال المباشر — أعد توصيل الجهاز الآخر';
+  };
+  ch.onmessage=e=>{
+    if(typeof e.data==='string'){
+      try{const m=JSON.parse(e.data);if(m.type==='chat'){window.ABKChat?.receive(m);return}}catch{}
+    }
+    onChannelMessage(e);
+  };
+}
+
+// Used by the internal chat add-on. Chat messages travel through Supabase Realtime.
+async function relaySend(message){ return sendBroadcast('message',{message}); }
+$('#chooseFiles').onclick=()=>$('#fileInput').click();
+$('#chooseFolder').onclick=async()=>{
+  if('showDirectoryPicker' in window){
+    try{const dir=await window.showDirectoryPicker({mode:'read'});const out=[];await walkHandle(dir,'',out);return enqueueFiles(out)}catch(e){if(e?.name==='AbortError')return}
+  }
+  $('#folderInput').click();
+};
+$('#fileInput').onchange=e=>{enqueueFiles([...e.target.files].map(file=>({file,path:file.name})));e.target.value=''};
+$('#folderInput').onchange=e=>{enqueueFiles([...e.target.files].map(file=>({file,path:file.webkitRelativePath||file.name})));e.target.value=''};
+const dz=$('#dropZone');
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();if(canSend())dz.classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
+dz.addEventListener('drop',async e=>{ if(!canSend())return; const entries=await filesFromDrop(e.dataTransfer); enqueueFiles(entries); });
+
+
+async function walkHandle(handle,prefix,out){
+  if(handle.kind==='file'){const file=await handle.getFile();out.push({file,path:`${prefix}${file.name}`});return}
+  const next=`${prefix}${handle.name}/`;
+  for await(const child of handle.values()) await walkHandle(child,next,out);
+}
+
+async function filesFromDrop(dt){
+  const items=[...(dt.items||[])]; const out=[];
+  if(items.length && items.some(i=>typeof i.webkitGetAsEntry==='function')){
+    for(const item of items){const entry=item.webkitGetAsEntry?.();if(entry)await walkEntry(entry,'',out)}
+    if(out.length)return out;
+  }
+  return [...(dt.files||[])].map(file=>({file,path:file.webkitRelativePath||file.name}));
+}
+async function walkEntry(entry,prefix,out){
+  if(entry.isFile){const file=await new Promise((resolve,reject)=>entry.file(resolve,reject));out.push({file,path:`${prefix}${file.name}`});return}
+  if(entry.isDirectory){const next=`${prefix}${entry.name}/`;const reader=entry.createReader();while(true){const batch=await new Promise((resolve,reject)=>reader.readEntries(resolve,reject));if(!batch.length)break;for(const child of batch)await walkEntry(child,next,out)}}
+}
+
+function cardFor(container,id,name,size,state='جاهز'){
+  const div=document.createElement('div');div.className='file-card';div.id=`file-${id}`;
+  div.innerHTML=`<div class="file-row"><div class="file-main"><b></b><small></small></div><span class="file-badge"></span></div><div class="bar"><i></i></div>`;
+  div.querySelector('b').textContent=name;div.querySelector('small').textContent=fmt(size);div.querySelector('.file-badge').textContent=state;container.appendChild(div);return div;
+}
+function setProgress(id,pct,state){const el=document.getElementById(`file-${id}`);if(!el)return;el.querySelector('.bar i').style.width=`${Math.max(0,Math.min(100,pct))}%`;if(state)el.querySelector('.file-badge').textContent=state}
+function enqueueFiles(entries){
+  if(!entries.length||!canSend())return toast('انتظر اتصال الجهاز الآخر');
+  for(const item of entries){const file=item.file||item;const path=safePath(item.path||file.webkitRelativePath||file.name);const id=crypto.randomUUID();sendQueue.push({id,file,path});cardFor($('#sendQueue'),id,path,file.size,'في الانتظار')}
+  pumpQueue();
+}
+async function waitForBuffer(){while(channel&&channel.bufferedAmount>4*1024*1024)await sleep(35)}
+async function pumpQueue(){
+  if(sending)return;sending=true;
+  try{
+    while(sendQueue.length){
+      if(channel?.readyState!=='open') throw new Error('Direct channel unavailable');
+      const {id,file,path}=sendQueue.shift();
+      const meta={type:'file-start',id,name:basename(path),path,size:file.size,mime:file.type||'application/octet-stream'};
+      channel.send(JSON.stringify(meta));
+      const chunkSize=64*1024;let offset=0;setProgress(id,0,'إرسال مباشر');
+      while(offset<file.size){
+        const chunk=await file.slice(offset,offset+chunkSize).arrayBuffer();
+        await waitForBuffer();
+        if(channel?.readyState!=='open')throw new Error('Direct channel closed during file');
+        channel.send(chunk);
+        offset+=chunk.byteLength;setProgress(id,file.size?offset/file.size*100:100,`${Math.floor(file.size?offset/file.size*100:100)}%`);
+      }
+      channel.send(JSON.stringify({type:'file-end',id}));
+      setProgress(id,100,'تم الإرسال ✓');window.ABKChat?.notify('sent');
+    }
+  }catch(e){console.error(e);toast('توقف الاتصال أثناء الإرسال — أعد الاتصال ثم اختر الملف مرة أخرى')}
+  sending=false;
+}
+
+function beginIncoming(m,mode){currentIncoming=m;incomingChunks=[];receivedBytes=0;if(mode==='relay')$('#receiveStatus').textContent='متصل — استقبال آمن عبر الخادم';cardFor($('#receivedFiles'),m.id,m.path||m.name,m.size,'جاري الاستقبال')}
+function finishIncoming(m){
+  const blob=new Blob(incomingChunks,{type:currentIncoming?.mime||'application/octet-stream'});const url=URL.createObjectURL(blob);const path=safePath(currentIncoming?.path||currentIncoming?.name||'file');
+  setProgress(m.id,100,'تم الاستقبال ✓');const el=document.getElementById(`file-${m.id}`);const a=document.createElement('a');a.className='download';a.href=url;a.download=basename(path);a.textContent='حفظ الملف';el?.appendChild(a);
+  completedFiles.set(m.id,{path,blob,url});window.ABKChat?.notify('file');$('#saveAll').disabled=false;currentIncoming=null;incomingChunks=[];receivedBytes=0;
+}
+async function onChannelMessage(e){
+  if(typeof e.data==='string'){let m;try{m=JSON.parse(e.data)}catch{return}if(m.type==='file-start')beginIncoming(m,'webrtc');else if(m.type==='file-end'&&currentIncoming&&m.id===currentIncoming.id)finishIncoming(m)}
+  else if(currentIncoming){incomingChunks.push(e.data);receivedBytes+=e.data.byteLength;const pct=currentIncoming.size?receivedBytes/currentIncoming.size*100:100;setProgress(currentIncoming.id,pct,`${Math.floor(pct)}%`)}
+}
+$('#saveAll').onclick=async()=>{
+  if(!completedFiles.size)return;
+  if('showDirectoryPicker' in window){
+    try{
+      const root=await window.showDirectoryPicker({mode:'readwrite'});
+      for(const item of completedFiles.values()){
+        const parts=item.path.split('/').filter(Boolean);let dir=root;
+        for(let i=0;i<parts.length-1;i++)dir=await dir.getDirectoryHandle(safeSegment(parts[i]),{create:true});
+        const handle=await dir.getFileHandle(safeSegment(parts.at(-1)),{create:true});const w=await handle.createWritable();await w.write(item.blob);await w.close();
+      }
+      return toast(`تم حفظ ${completedFiles.size} ملف/ملفات`);
+    }catch(e){if(e?.name==='AbortError')return;console.warn(e)}
+  }
+  toast('المتصفح لا يدعم حفظ المجلد مباشرة — سيتم تنزيل الملفات منفردة');
+  for(const item of completedFiles.values()){const a=document.createElement('a');a.href=item.url;a.download=basename(item.path);document.body.appendChild(a);a.click();a.remove();await sleep(350)}
+};
+
+const initialJoin=new URLSearchParams(location.search).get('join');if(initialJoin)$('#receiveMode').click();
+
+</script>
+<script>
+
+(()=>{
+let audio,unread=0,open=false;
+const style=document.createElement('link');style.rel='stylesheet';style.href='/chat.css?v=1';document.head.append(style);
+const panel=document.createElement('aside');panel.id='abk-chat';panel.innerHTML=`
+<button id="abk-chat-toggle" aria-label="فتح المحادثة">💬 <span id="abk-chat-count"></span></button>
+<div id="abk-chat-box" hidden><div class="abk-chat-head"><b>💬 محادثة ABK</b><button id="abk-chat-close" aria-label="إغلاق">✕</button></div>
+<div id="abk-chat-messages" role="log" aria-live="polite"></div>
+<form id="abk-chat-form"><input id="abk-chat-input" maxlength="2000" autocomplete="off" placeholder="اكتب رسالتك..." aria-label="الرسالة"><button type="submit">إرسال ➤</button></form>
+</div>`;
+document.body.append(panel);
+const $=s=>panel.querySelector(s), log=$('#abk-chat-messages'),box=$('#abk-chat-box');
+function sound(kind){
+ try{
+  audio ||= new (window.AudioContext||window.webkitAudioContext)();
+  if(audio.state==='suspended')audio.resume().catch(()=>{});
+  const now=audio.currentTime;
+  const notes=kind==='file'?[660,880,1100]:kind==='sent'?[660]:[880,660];
+  notes.forEach((freq,i)=>{const osc=audio.createOscillator(),gain=audio.createGain(),t=now+i*.13;osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.12,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.115);osc.connect(gain).connect(audio.destination);osc.start(t);osc.stop(t+.12)});
+ }catch{}
+}
+function add(message,mine){
+ const row=document.createElement('div');row.className='abk-msg '+(mine?'mine':'theirs');
+ const content=document.createElement('span');content.textContent=message;
+ const time=document.createElement('small');time.textContent=new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+ row.append(content,time);log.append(row);log.scrollTop=log.scrollHeight;
+}
+function toggle(force){open=force??!open;box.hidden=!open;if(open){unread=0;$('#abk-chat-count').textContent='';$('#abk-chat-input').focus()}}
+$('#abk-chat-toggle').onclick=()=>toggle();$('#abk-chat-close').onclick=()=>toggle(false);
+document.addEventListener('pointerdown',()=>{try{audio ||= new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{})}catch{}},{once:true});
+$('#abk-chat-form').onsubmit=async e=>{
+ e.preventDefault();const input=$('#abk-chat-input'),message=input.value.trim();if(!message)return;
+ if(!roomCode||!role){toast('اتصل بالجهاز الآخر أولًا');return}
+ const payload={type:'chat',id:crypto.randomUUID(),text:message};
+ try{
+  // Relay is independent of the file-transfer data channel and works in both directions.
+  await relaySend(payload);add(message,true);sound('sent');input.value='';
+ }catch(err){toast('تعذر إرسال الرسالة، حاول مرة أخرى')}
+};
+window.ABKChat={
+ receive(m){
+  if(!m||m.type!=='chat'||typeof m.text!=='string')return;
+  add(m.text.slice(0,2000),false);sound('message');
+  if(!open){unread++;$('#abk-chat-count').textContent=unread>99?'99+':String(unread)}
+ },
+ notify:sound
+};
+})();
+
+</script>
+</body>
+</html>
